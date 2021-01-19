@@ -1,0 +1,112 @@
+%!TEX program = xelatex
+%!TEX TS-program = xelatex
+%!TEX encoding = UTF-8 Unicode
+
+% 项目地址：https://gitee.com/hrrcn/BjutThesisTemplate.git
+% type参数为学位类型，bachelor|master|doctor|postdoctor
+% 专硕使用参数professional,学硕去掉此参数。
+% 若无法编译加粗字体，添加参数AutoFakeBold；否则去掉参数。
+\documentclass[type=master,professional,AutoFakeBold=0.5]{bjutthesis}
+% 引用自定义的bjutthesis.cls类文件 %
+\usepackage{bjutthesis}
+% 正文中插入代码包 %
+\usepackage{listings}
+%\usepackage{caption}
+% 表格单元格设置包 %
+\usepackage{makecell}
+% 禁止图片和表格浮动
+% 用法：\begin{figure}[H]
+%      \begin{table}[H]
+\usepackage{float}
+\usepackage{longtable}
+
+%
+% 代码段引用设置
+%
+%\setmonofont{Consolas}
+%\setmonofont{Courier New}
+\lstset{
+ %basicstyle=\fontspec{SimHei},
+ %basicstyle=\ttfamily,
+ %basicstyle=\sffamily,   %\footnotesize \sffamily,
+ breaklines=true,                                    %这条命令可以让LaTeX自动将长的代码行换行排版
+ %extendedchars=true,                                %解决代码跨页时，章节标题，页眉等汉字不显示的问题
+ %columns=fixed,       
+ %numbers=left,                                      % 在左侧显示行号
+ %numberstyle=\tiny\color{gray},                     % 设定行号格式
+ %frame=shadowbox,                                   % 显示背景边框
+ %backgroundcolor=\color[RGB]{245,245,244},          % 设定背景颜色
+ keywordstyle=\color[RGB]{40,40,255},                % 设定关键字颜色
+ %numberstyle=\footnotesize\color{darkgray},           
+ %commentstyle=\it\color[RGB]{0,96,96},              % 设置代码注释的格式
+ %commentstyle=\it\color{red!50!green!50!blue!50},
+ %stringstyle=\rmfamily\slshape\color[RGB]{128,0,0}, % 设置字符串格式
+ showstringspaces=false,                             % 不显示字符串中的空格
+ %language=c,                                        % 设置语言
+ flexiblecolumns,                                    % 自动调整字间距
+}
+
+% 定义所有的图片文件在fig子目录下 %
+\graphicspath{{fig/}}
+
+%
+% 设置封面
+%
+\begin{document}
+\frontmatter
+\input{data/cover}
+\makecover
+
+%
+% 目录
+%
+\tableofcontents
+% 保证在偶数页结束本章节 %
+\bjutclearpage
+
+%% 插图索引
+%\listoffigures
+%\bjutclearpage
+
+%% 表格索引
+%\listoftables
+%\bjutclearpage
+
+%% 公式索引
+%\listofequations
+%\bjutclearpage
+
+%% 符号表示 
+%\input{data/notation}
+%\bjutclearpage
+
+%
+% 正文部分
+%
+\mainmatter
+\include{data/chap01}
+\include{data/chap02}
+\include{data/chap03}
+\include{data/chap04}
+\include{data/chap05}
+% \include{data/chap06}
+% \include{data/chap07}
+\include{data/chap@}
+\include{data/conclusion}
+\include{data/publications}
+
+\backmatter
+
+%
+% 参考文献
+%
+\bibliographystyle{bjutthesis}
+\bibliography{ref/refs}
+\bjutclearpage
+
+%
+% 致谢
+%
+\include{data/ack}
+
+\end{document}
