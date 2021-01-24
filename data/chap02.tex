@@ -209,20 +209,107 @@ FFS中的文件存储。右图中，蓝色方框代表了一个完整的FFS中�
 % 2.3节
 %
 \section{UEFI文件系统协议栈}
-
+UEFI BIOS中的文件系统协议栈指的是针对块设备，也就是对应一般应用于PC和服务器上的硬盘设备，UEFI文件
+系统协议栈通过把对硬盘设备的不同操作功能分层起到区分和满足应用层与内核层不同功能需要的目的，下面本
+节将做具体的介绍。
 \subsection{总体介绍}
+UEFI BIOS和传统BIOS都支持硬盘的读写功能。UEFI优于传统BIOS的地方在于，UEFI还提供了对文件系统的支持。
+其中传统BIOS由于直接由汇编语言编写，实现内容十分依赖于具体的硬件平台，因此不易在运行流程中进行像对硬盘
+设备这种次要设备的过多交互，像ESP（EFI System Partition）分区中文件的操作也就只通过直接操作硬盘驱动
+程序来存取具体扇区中的数据内容。然而进入了UEFI时代，BIOS的实现得到了以C语言为具体实现工具并进行了国际
+统一的实现标准，提供统一固件接口，因此从需求性和实现性方面都更加需要UEFI系统与硬盘的交互功能，因此才
+出现了用于管理UEFI中硬盘设备文件的UEFI文件系统协议栈。
+\par 通常，每个UEFI系统至少有一个ESP分区，在这个分区上存放了操作系统启动文件。既然操作系统加载器以
+文件的形式存放在ESP分区内，UEFI就需要有读写文件的功能。文件的读写与管理在一定需求量和为了统一便捷的前
+提下必须通过文件系统来完成，要支持读写文件，UEFI必须首先能操作ESP分区上的文件系统。ESP主要用来存放
+操作系统加载器相关的文件，有时在一些实际项目的调试过程中，也需要通过将事先编译好的EFI可运行特定硬件的
+驱动程序通过操作系统放入UEFI能访问到的ESP分区内，并从UEFI SHELL中手动加载所述驱动程序来使调试工作
+更加便捷。总体来说，UEFI对文件系统的要求比较简单，所以采用FAT文件系统就可以满足需求，随着UEFI技术的
+不断发展，对硬盘数据访问的要求也越来越高，因此目前已出现ext2等文件系统用来支持UEFI，并已发布到官方
+开源库中。UEFI文件系统协议栈图如图2-5所示。
+
+\begin{figure}[htb]
+    \label{ffs_format}
+    % 调整图片与上文的垂直距离 %
+    \vspace{0cm}   
+    % 调整图片图片与中文标题、中文标题与英文标题距离 %                             
+    \setlength{\abovecaptionskip}{0.3cm}  
+    % 引用/fig/目录中的图片文件 %
+	\centering
+    \includegraphics[width=10cm]{filesystem_protocol_stack.png}
+    % 中文标题 %
+    \caption*{图 2-5 UEFI文件系统协议栈}
+    % 调整图片英文标题与下文距离 %
+    \setlength{\belowcaptionskip}{-0.7cm}
+    % 英文标题 %
+    \caption*{Figure 2-5 UEFI File system protocol stack}
+\end{figure}
+
+如图2-5所示，最下层Disk层表示如硬盘设备这样的块设备硬件。PassTh-\newline rough层表示硬盘设备与总线接口的协议，
+EFI\_ATA\_PASS\_THRU\_PROTOCOL提供有关ATA控制器以及将ATA命令块发送到与该ATA控制器相连的任何ATA设备的信息。
+而EXT\_SCSI\_PASS\_THRU\_PROTOCOL协议提供了将ATAPI命令块发送到连接到该ATA控制器或SCSI控制器的ATAPI设备
+的功能。此协议可直接操作硬盘具体扇区中的数据内容，为UEFI内核提供最底层的硬盘接口功能函数。
+\par 再往上一层是块输入输出BlockIo（下同）层，BlockIo是可扩展固件接口输入输出协议EFI\_BLOCK\_IO\_PROTOCOL
+的缩写，主要提供了按块访问设备的功能，包括块的读写函数和刷新flush函数。再往上一层的硬盘输入输出DiskIo层，
+在BlockIo的基础上进行再次封装，DiskIo为EFI\_DISK\_IO\_PROTOCOL的缩写。此协议提供了从磁盘任
+意地址读写任意长度数据的功能，这也符合了硬盘作为块设备可以随机访问数据的特点。
+\par 再往上一层为文件系统输入输出FileSystemIo（下同）层，他对应于简易文件系统协议EFI\_SIMPLE\_FILE\_SYSTEM
+\_PROTOCOL协议，这个协议是对文件系统驱动加载时，驻留在内存中的文件系统功能函数的引用和封装。再往上一层为文件
+输入输出FileIo层，对应于EFI\_FILE\_PROTOCOL协议，用于对以文件为单位的数据进行操作。在UEFI运行环境中如Shell环
+境中加载.efi文件时，就经历了从下到上完整的协议栈的过程，最终以文件数据流的形式传递给Shell环境，并完成后续的执
+行或其他加载操作。
 
 \subsection{相关驱动介绍}
+UEFI中的驱动大致分为两类：一类是符合UEFI驱动模型的驱动，成为“UEFI驱动”；另一类是不遵循UEFI驱动模型的驱动，
+称为“DXE驱动”，也称为服务型驱动。服务型驱动加载过程较为简单，在Image初始化的时候，即在执行模块入口函数时，
+将Protocol安装到自身Handle即可。
+如2.1节中UEFI协议运作方式的介绍可知，UEFI协议作为一个包含了所需功能函数指针的结构体，需要具体的UEFI驱动程序
+为其实现所需的功能。
+UEFI文件系统协议栈相关的驱动程序分别为：AtaatapiPassThruDxe、PartitionDxe、DiskIoDxe、FileSysDxe，
+从命名可以看出，他们四个驱动都属于DXE驱动即服务型驱动，用于在UEFI的DXE和BDS阶段为系统提供服务，其中
+的PassThruDxe和FileSysDxe根据具体的硬盘接口与具体文件系统不同而定。其中PassThruDxe驱动程序负责定义硬盘设备
+与ATA或SCSI总线进行数据交互的功能；PartitionDxe用于解析存储在硬盘ESP分区中的GPT分区表，用于获取到硬盘中数据
+的分区信息，GPT分区表示意图如图2-6所示；
 
+\begin{figure}[htb]
+    \label{ffs_format}
+    % 调整图片与上文的垂直距离 %
+    \vspace{0cm}   
+    % 调整图片图片与中文标题、中文标题与英文标题距离 %                             
+    \setlength{\abovecaptionskip}{0.3cm}  
+    % 引用/fig/目录中的图片文件 %
+	\centering
+    \includegraphics[width=10cm]{partition.png}
+    % 中文标题 %
+    \caption*{图 2-6 硬盘GPT分区表示意图}
+    % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
+    \setlength{\belowcaptionskip}{-0.3cm}
+    % 英文标题 %
+    \caption*{Figure 2-6 Hard disk GPT partition}
+\end{figure}
+
+DiskIoDxe驱动用于定义硬盘最基础的输入输出数据功能，也就是等同于操作系统中的硬盘驱动程序；而
+FileSysDxe驱动则负责为UEFI提供与硬盘硬件相同的文件系统数据组织形式，用以在UEFI系统中通过UNIX风格的文件系统
+为其他模块提供硬盘文件的交互功能支持。
 %
 % 2.4节
 %
 \section{BMC技术介绍}
-
+BMC(Baseboard Management Controller)是一种专用芯片/控制器(叫做服务
+器处理器或基板管理控制器(BMC)，是基于IPMI系统的心脏；在IPMI管理平
+台中，系统管理软件对各个被管理器件的管理，都是通过与BMC通信来实现
+的。BMC并不依赖于服务器的处理器、BIOS或操作系统来工作，它有自己的
+固件、电源、MAC地址与网络接口，是一个单独在系统内运行的无代理管理子系统。
 \subsection{BMC在系统中的位置}
 
 \subsection{BMC与BIOS通讯方式}
-
+IPMI接口作为一种智能平台管理接口如今已经成为通用接口的标准，有了
+它在管理硬件的时候更加方便。IPMI区别于其他的平台管理接口的地方在于，
+它不依赖系统的任何组件，只依靠自己就可以独立的完成工作，这使得用户只要
+接通电源，即使关机状态下也可以实现对服务器的监控。IPMI作为一种管理接
+口的标准，可以说基板管理控制器就是整个管理平台的心脏，拥有了它IPMI才
+能够准确把握每个传感器监测出来的数据，并把各类事件的日志储存起来。
+BIOS与BMC的通信方式正是使用了BMC与其他硬件之间通信的方法，也就是通过IPMI协议来进行二者的通信。
 %
 % 2.5节
 %
