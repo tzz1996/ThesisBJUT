@@ -269,13 +269,22 @@ UEFI文件系统协议栈相关的驱动程序分别为：AtaatapiPassThruDxe、
 从命名可以看出，他们四个驱动都属于DXE驱动即服务型驱动，用于在UEFI的DXE和BDS阶段为系统提供服务，其中
 的PassThruDxe和FileSysDxe根据具体的硬盘接口与具体文件系统不同而定。其中PassThruDxe驱动程序负责定义硬盘设备
 与ATA或SCSI总线进行数据交互的功能；PartitionDxe用于解析存储在硬盘ESP分区中的GPT分区表，用于获取到硬盘中数据
-的分区信息，GPT分区表示意图如图2-6所示；
+的分区信息，磁盘在使用前都要进行分区，也就是将硬盘划分为一个个逻辑的区域，不同的分区上可装载不同的文件系统，以
+方便用户使用。
+GPT分区表示意图如图2-6所示。GPT(GUID Partition Table)：全局唯一标识磁盘分区表，是一个实体硬盘的
+分区表的结构布局的标准，是可扩展固件接口（EFI）标准，被用于替代BIOS系统中的一64bits来存储逻辑块地址和大小信
+息的主开机纪录（MBR）分区表，与普遍使用的主引导记录(MBR)分区方案相比，GPT提供了更加灵活的磁盘分区机制。
+LBA(Logical Block Addressing)逻辑块寻址模式将CHS这种三维寻址方式转变为一维的线性寻址，它把硬盘所有
+物理扇区的C/H/S编号通过一定的规则转变为一线性的编号，系统效率得到大大提高，避免了烦琐的磁头/柱面/扇区
+的寻址方式。如图中的LBA0扇区为保护MBR，它的作用是阻止不能识别GPT分区的磁盘工具试图对其进行分区或格式化
+等操作。LBA1扇区开始则为分区表和表项，每个表项对应一个用户区域内的磁盘分区，并表识这个分区的开始和结束
+位置。关于GPT分区表的详细分析及恶意篡改方式将在第三章中介绍。
 
 \begin{figure}[htb]
     \label{ffs_format}
     % 调整图片与上文的垂直距离 %
     \vspace{0cm}   
-    % 调整图片图片与中文标题、中文标题与英文标题距离 %                             
+    % 调整图片图片与中文标题、中文标题与英文标题距离 %
     \setlength{\abovecaptionskip}{0.3cm}  
     % 引用/fig/目录中的图片文件 %
 	\centering
@@ -283,7 +292,7 @@ UEFI文件系统协议栈相关的驱动程序分别为：AtaatapiPassThruDxe、
     % 中文标题 %
     \caption*{图 2-6 硬盘GPT分区表示意图}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
-    \setlength{\belowcaptionskip}{-0.3cm}
+    \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
     \caption*{Figure 2-6 Hard disk GPT partition}
 \end{figure}
