@@ -1,12 +1,59 @@
 %
 % 第四章
 %
-\chapter{基于UEFI的硬盘文件可信加载详细设计}
+\chapter{基于UEFI的硬盘文件安全加载策略实现}
 \label{cha:detail_design}
+UEFI环境中硬盘文件的安全加载依赖于UEFI固件系统中对UEFI各个启动阶段核心代码的可信验证，和对特定文件
+系统协议栈驱动程序和硬盘ESP分区中文件的可信测量，本文在第三章中已经描述了此安全方案在基于原有UEFI BIOS
+的基础上进行的阶段设计和可信度量模块的设计。在本章将会针对第三章中的设计方案提出对应的具体实施过程，其中
+包括可信度量模块各个模块的具体实现和根据各个启动阶段的特点进行的启动阶段安全方案实现。
+
 %
 % 4.1节
 %
-\section{度量计算模块设计}
+\section{可信度量驱动的实现}
+此安全方案设计的DXE阶段可信度量驱动程序属于DXE服务型驱动，其中包含了几个主要的功能模块，他们分别是
+第三章中系统结构图提出的可信度量值计算模块、固件文件系统和硬盘文件系统访问模块、BMC通信模块、驱动程序
+度量模块和硬盘文件度量模块，本节将对这些模块做更细致的介绍和实现细节。
+
+\subsection{可信度量值计算模块}
+可信度量值计算模块是对自定义SHA1散列函数的封装，用于对DXE阶段的四个UEFI文件系统协议栈驱动程序进行完整性
+度量，并对BDS core进行度量；也负责在BDS阶段对硬盘文件数据进行可信测量。
+\par 此度量过程采用SHA1散列值计算方法，SHA1是由NISTNSA设计为同DSA一起使用的，它对长度小于2的64次方的输入，
+产生长度为160bit的散列值，因此抗穷举(brute-force)性更好。SHA-1设计时基于和MD4相同原理,并且模仿了该算法。
+SHA-1是由美国标准技术局（NIST）颁布的国家标准，是一种应用最为广泛的hash函数算法，也是目前最先进的加密
+技术，被政府部门和私营业主用来处理敏感的信息。而SHA-1基于MD5，MD5又基于MD4。
+
+\begin{lstlisting}
+typedef struct{
+    EFI_SHA1_INIT SHA_Init;
+    EFI_SHA1_UPDATE SHA_Update;
+    EFI_SHA1_FINAL SHA_Final;
+    EFI_SHA1_CLEAN SHA_Clean；
+} EFI_SHA1_PROTOCOL;
+\end{lstlisting}
+
+代码列出的是自定义的EFI\_SHA1\_PROTOCOL协议，用于在加载DXE阶段的可信度量驱动时通过Openprotocol的启动时
+服务的系统调用加载到UEFI系统的句柄数据库中。其中EFI\_SHA1\_INIT，EFI\_SHA1\_UPDATE，EFI\_SHA1\_FINAL，
+EFI\_SHA1\_CLEAN为四个函数指针，用于指向位于驱动中的函数实现。SHA\_Init函数指针所指向的函数用于初始化一个
+用于SHA1算法加密过程的数据结构SHA\_CTX，该结构存放弄了生成SHA1散列值的一些参数。SHA\_Update函数用于处理
+大文件，将其分散成等份的较小值，并对每一块分别调用SHA\_Update生成对应的散列值。SHA\_Final函数用于将
+SHA\_Update函数生成的分块的散列值通过运算形成一个最终的160bits的散列值。SHA\_Clean函数用于清除SHA\_CTX
+数据结构中针对SHA1算法初始化的数据。
+
+\begin{lstlisting}
+typedef struct SHAstate_st {
+    SHA_LONG h0,h1,h2,h3,h4;
+    SHA_LONG Nl,Nh;
+    SHA_LONG data[SHA_LBLOCK];
+    unsigned int num;
+} SHA_CTX;
+\end{lstlisting}
+
+在结构体SHA\_CTX中，SHA\_LONG定义为unsigned int类型，SHA-1采用160位的信息摘要，也以32位为计算长度，
+就需要5个链接变量，因此h0-h4用来在SHA\_Init过程中初始化并存储这5个链接变量用于度量过程中的计算。其中
+的SHA\_LBLOCK变量的扩展值为64，意味着SHA1在进行分组运算时，每一组的长度为512bits及64Bytes。
+
 %
 % 4.2节
 %
