@@ -57,11 +57,215 @@ typedef struct SHAstate_st {
 %
 % 4.2节
 %
-\section{硬盘文件度量模块设计}
+\subsection{固件文件系统访问模块}
+固件文件系统访问模块用于给可信度量值计算模块提供各个阶段的核心代码和DXE阶段的文件系统协议栈驱动程序在FV
+固件卷中的数据信息。需要根据FV固件卷中FFS固件文件系统的数据格式提取出对应的核心或驱动文件的Image信息。
+但FV固件卷中存储的FFS格式的文件中并不只包含着可运行的EFI类型二进制文件，还有着许多标识着文件类型、文件
+修改信息等众多段信息，若要对UEFI各个阶段核心代码和特定驱动文件进行度量，必须确定需要度量的EFI可执行文件
+的data部分内容，以确保基准值的计算与UEFI启动过程中度量值的计算所计算的EFI数据内容统一。
+\par 本节将详细说明FFS文件的存储格式以及此安全方案的固件文件系统访问模块如何进行的设计与实现。
+
+\subsubsection{FFS文件存储格式}
+根据第二章中所述的FV固件卷数据存储方式的介绍可知，FV固件中的文件以section的形式分段存储，每个数据段存储
+特定的文件规格信息。但要在UEFI内存中精确的获取到核心和驱动程序文件的EFI数据内容，就需要更详细的FFS文件
+存储格式研究。FV固件卷中文件的存储方式表示在图4-1中。
+
+\begin{figure}[htb]
+    \label{ffs_format}
+    % 调整图片与上文的垂直距离 %
+    \vspace{0cm}   
+    % 调整图片图片与中文标题、中文标题与英文标题距离 %
+    \setlength{\abovecaptionskip}{0.3cm}
+    % 引用/fig/目录中的图片文件 %
+	\centering
+    \includegraphics[width=12cm]{fv_format.png}
+    % 中文标题 %
+    \caption*{图 4-1 固件卷数据存储格式}
+    % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
+    \setlength{\belowcaptionskip}{-0.7cm}
+    % 英文标题 %
+    \caption*{Figure 4-1 The Firmware Volume Format}
+\end{figure}
+
+如图4-1所示，符合PI规范的FV固件卷文件包含主要两部分，其中一部分是如图所示的firmware volume header
+固件卷头部，另一部分是firmware volume data固件卷数据部分。其中固件卷头部用于描述此FV文件的所有属性信息，
+同时也包含了一个用来标识组织固件中数据存储格式的固件文件系统的UEFI全局标识符GUID。固件卷头部不仅可以支持
+UEFI特定的FFS固件文件系统，还支持一切符合PI规范的固件文件系统。
+\par 当UEFI系统加载FV中的文件信息时，首先识别固件卷头部，并用名为EFI\_FIRMWARE\_VOLUME\_HEADER的
+数据结构用来在UEFI内存中存储头部信息。固件卷数据部分也用GUID的形式在内存中进行唯一标识，其中UEFI规范
+认可的固件文件系统GUID用EFI\_FIRMWARE\_FILE\_SYSTEM2\_GUID和EFI\_FIRMWARE\_FILE\_SYSTEM3\_GUID写死在BIOS
+的固件芯片中。当单个文件内容小于16MB时，系统将采用EFI\_FIRMWARE\_FILE\_SYSTEM2\_GUID来描述固件文件
+系统，若单个文件内容大于16MB，并且向后兼容SYSTEM2类型的FFS时，将采用EFI\_FIRMWARE\_FILE\_SYSTEM3\_GUID
+来描述。
+
+\begin{figure}[htb]
+    \label{ffs_format}
+    % 调整图片与上文的垂直距离 %
+    \vspace{0cm}   
+    % 调整图片图片与中文标题、中文标题与英文标题距离 %
+    \setlength{\abovecaptionskip}{0.3cm}
+    % 引用/fig/目录中的图片文件 %
+	\centering
+    \includegraphics[width=10cm]{ffs_file_layout.png}
+    % 中文标题 %
+    \caption*{图 4-2 固件文件系统文件布局}
+    % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
+    \setlength{\belowcaptionskip}{-0.7cm}
+    % 英文标题 %
+    \caption*{Figure 4-2 Typical FFS File Layout}
+\end{figure}
+
+\par 如图4-1所示，固件卷中每一个文件以单独的结构进行存储，文件名称为FFS file。一个文件中包含了文
+件头部，用于记录文件中section内容及文件属性的信息，如图4-2中所示的文件状态、文件大小、文件名称、文件属性、
+文件类型等信息，图4-2展示的是一个ffs文件的文件结构组成，其中所有的头部和数据信息都是32位对齐的。
+同时包含了一组section。每一个section中也都分别包含一个section头部信息，还有section中的数据内容。
+UEFI规范所规定的固件文件系统section分类及信息如表4-1。
+
+\begin{table}[htb]
+    \label{tab:parametervalues}
+    % 设置表内行间距 %
+    \renewcommand\arraystretch{1.5}
+    % 设置表题目 %
+	\caption*{表 4-1 固件文件系统分段信息}
+	\caption*{Table 4-1 The Firmware File System Section Imformation}
+    \begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}ccl@{}}
+    % 表上线和表头 %
+	\toprule[0.75pt]
+    名称  &数值  &\makecell[c]{描述}\\
+    % 表中线和表内容 %
+	\midrule[0.5pt]
+	EFI\_SECTION\_COMPRESSION     &0x01  &\quad 封装了其他被压缩的分段\\
+    EFI\_SECTION\_GUID\_DEFINED   &0x02  &\makecell[l]{
+                                          \quad 封装部分，其中其他部分的格式由GUID\\
+                                                定义\\
+                                        }\\
+    EFI\_SECTION\_DISPOSABLE      &0x03  &\makecell[l]{
+                                          \quad 在构建过程中使用的封装部分，但执行时\\
+                                                不需要\\
+                                        }\\
+    EFI\_SECTION\_PE32            &0x10  &\quad PE32格式信息和可执行映像\\
+    EFI\_SECTION\_PIC             &0x11  &\quad 位置无关的代码段\\
+    EFI\_SECTION\_DXE\_DEPEX      &0x13  &\quad DXE阶段依赖表达式\\
+    EFI\_SECTION\_VERSION         &0x14  &\quad 版本号，文字和数字信息\\
+    EFI\_SECTION\_RAW             &0x19  &\quad raw数据信息\\
+    EFI\_SECTION\_PEI\_DEPEX      &0x1b  &\quad PEI阶段依赖表达式\\
+    % 表下线 %
+	\bottomrule[0.75pt]
+    \end{tabular*}
+    % 表格与下文距离 %
+    \vspace{-0.3cm}
+\end{table}
+
+如表4-1所示，在FV固件卷中的每个section中，都对应着不同的section分类信息，其中可以看到，EFI\_SECTION\_PE32
+这个section中存放着DXE驱动程序相关的关键信息，其中包含了PE32格式的说明信息，还有就是对应的EFI可执行文件，
+也就是驱动程序真正的可执行代码部分内容。在此安全方案的可信度量模块中，度量的就是UEFI启动各个阶段核心代码和
+驱动程序代码在FV固件卷中对应这个section里的相关信息。从表4-1中还可以看出，如EFI\_SECTION\_GUID\_DEFINED
+段的信息内容可以在FV固件卷中标识驱动程序的GUID信息，这也为在UEFI启动阶段在加载驱动程序时，通过内存中的驱动
+GUID和FV固件中的GUID匹配做好了实现基础。在众多section中，同样包括了如EFI\_SECTION\_VERSION这样的驱动文件
+版本的文字和数字信息标识。
+\par 表4-1中的EFI\_SECTION\_DXE\_DEPEX和EFI\_SECTION\_PEI\_DEPEX段的信息内容同样是两个关键的段信息，
+他们分别用于表达DXE阶段和PEI阶段对应的各个驱动程序和PEIM的加载顺序，此安全方案的实现需要借助这两个驱动依赖
+关系的字段来确定关键驱动加载的顺序问题，具体的依赖表达式关系及实施将在后面的小结中详细说明。
+
+\subsubsection{固件文件访问模块实现}
+在确定了FFS固件文件系统数据存储的具体格式之后，将在此可信度量驱动中的固件文件系统访问模块中实现UEFI内存中
+的驱动文件加载方法和内存中的存储方式。此模块将调用Boot Service启动服务中的LoadImage（）系统函数，在UEFI
+中，所有系统服务中存储的都是具体函数的函数指针，因此真正的映像加载功能函数由CoreLoadImage（）函数负责实现，
+并且其他系统函数也遵循这样的命名规则。具体函数的调用过程可通过代码分析得知，为CoreLoadImage调用
+CoreLoadImageCommon再最终通过CoreLoadPeImage函数进行PE32格式的文件数据加载。而这个格式也就对应上面提到
+的FV中的EFI\_SECTION\_PE32段里的内容。
+
+\begin{lstlisting}
+EFI_STATUS
+CoreLoadPeImage (
+    IN BOOLEAN                     BootPolicy,
+    IN VOID                        *Pe32Handle,
+    IN LOADED_IMAGE_PRIVATE_DATA   *Image,
+    IN EFI_PHYSICAL_ADDRESS        DstBuffer    OPTIONAL,
+    OUT EFI_PHYSICAL_ADDRESS       *EntryPoint  OPTIONAL,
+    IN  UINT32                     Attribute
+)
+\end{lstlisting}
+
+如上面CoreLoadPeImage函数定义的代码段，CoreLoadPeImage函数中BootPolicy输入参数如果为TRUE，则表示请求
+来自引导管理器，并且引导管理器正尝试加载FilePath作为引导选择。Pe32Handle输入参数指定了加载到UEFI内存中
+的PE32格式的映像句柄。Image参数为LOADED\_IMAGE\_PRIVATE\_DATA格式的数据结构，用于在系统内存中表示此DXE
+驱动程序的详细信息，其中也包含了PE32文件格式的头部信息和data数据信息。DstBuffer参数为可选输入参数，用于
+指定将此驱动文件映像存储至调用者指定的内存buffer缓存中。EntryPoint参数同样为可选参数，用于指定PE32 section
+中EFI可执行文件的入口点。Attribute为32位的image属性信息参数，每一bit位分别用于表示image信息。
+\par 其中IN和OUT为通过C语言\#define宏定义定义的空类型名称，用于给编码人员确定函数的输入和输出参数的设定，
+UEFI实现中函数统一采用这种方式，符合UEFI规范。
+
+\begin{lstlisting}
+typedef struct {
+    EFI_HANDLE                  Handle;   
+    UINTN                       Type;           
+    BOOLEAN                     Started;        
+    EFI_IMAGE_ENTRY_POINT       EntryPoint;     
+    EFI_LOADED_IMAGE_PROTOCOL   Info;           
+    EFI_PHYSICAL_ADDRESS        ImageBasePage;  
+    UINTN                       NumberOfPages;  
+    CHAR8                       *FixupData;              
+    EFI_STATUS                  Status;         
+    UINTN                       ExitDataSize;   
+    VOID                        *ExitData;      
+    VOID                        *JumpBuffer;    
+    BASE_LIBRARY_JUMP_BUFFER    *JumpContext;  
+    UINT16                      Machine;     
+    ...         
+    EFI_RUNTIME_IMAGE_ENTRY     *RuntimeData;   
+    EFI_DEVICE_PATH_PROTOCOL    *LoadedImageDevicePath;  
+    PE_COFF_LOADER_IMAGE_CONTEXT  ImageContext; 
+    EFI_STATUS                  LoadImageStatus;
+} LOADED_IMAGE_PRIVATE_DATA;
+\end{lstlisting}
+
+如上面代码所示，LOADED\_IMAGE\_PRIVATE\_DATA数据结构用于在UEFI内存中表示DXE驱动程序的完整信息，其中
+Handle和EntryPoint和CoreLoadPeImage函数的参数保持一致。ImageBasePage和NumberOfPages字段用于描述此
+驱动文件在内存中所占以页为单位的起始页位置和所占页数。也包括了用32位存储的驱动类型信息，其中UEFI中支持的
+驱动映像类型包括：
+
+\begin{lstlisting}
+#define EFI_IMAGE_SUBSYSTEM_EFI_APPLICATION 10
+#define EFI_IMAGE_SUBSYSTEM_EFI_BOOT_SERVICE_DRIVER 11
+#define EFI_IMAGE_SUBSYSTEM_EFI_RUNTIME_DRIVER 12
+\end{lstlisting}
+
+他们分别表示UEFI上层应用型映像文件，启动时服务的驱动映像文件和运行时驱动映像文件，并且PE32格式的映像类型
+属于EFI\_IMAGE\_SUBSYSTEM\_EFI\_RUNTIME\_DRIVER类型，可在加载驱动映像时进行类型的判别。
+\par LOADED\_IMAGE\_PRIVATE\_DATA数据结构中的ImageContext关键字段为可信度量过程的主要依据，ImageContext
+是一个PE\_COFF\_LOADER\_IMAGE\_CONTEXT类型结构体，用来记录驱动文件加载信息。
+
+\begin{lstlisting}
+typedef struct {
+    ......
+    VOID              *ImageBase;
+    UINT64            ImageSize;
+    ......
+} PE_COFF_LOADER_IMAGE_CONTEXT;
+\end{lstlisting}
+
+其中ImageBase就是记录内存中PE32格式文件的起始地址，ImageSize提供了文件的大小，通过把PE32格式驱动映像
+文件加载到指定地址，并将其记录在这两个变量中，就可以在度量时获取到驱动文件内容。
+
 %
 % 4.3节
 %
-\section{驱动文件度量模块}
+\section{硬盘文件系统访问模块}
+硬盘文件系统访问模块提供FAT文件系统中ESP分区内系统文件数据的加载过程，此模块由BDS core代码调用，用来
+将指定硬盘文件数据加载到UEFI内存中，过程如下所示。
+
+\begin{lstlisting}
+EFI_FILE                        *RootIo;
+
+Status = gBS->HandleProtocol (
+    Handle,
+    &gEfiSimpleFileSystemProtocolGuid,
+    (VOID **) &VolumeInterface
+    );
+Status = VolumeInterface->OpenVolume(VolumeInterface, &RootIo);
+\end{lstlisting}
+
 %
 % 4.4节
 %
