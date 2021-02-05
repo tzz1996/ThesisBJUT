@@ -410,26 +410,128 @@ IpmiSendCommand (
     IN  UINT8                          CommandDataSize
 ) {
     ...
-    do {
-        Value = IpmiIoRead8(This, BT_CTRL_R);
-        if ((Value & B_BUSY) == 0 && (Value & H2B_ATN) == 0) {
-            break;
-        }
-        Delay--;
-    } while (Delay > 0);
-    ...
-    for(Index = 1; Index < DataSize; Index++) {
-        IpmiIoWrite8(Instance, BMC2HOST_R, Data[Index]);
+    Status = KcsWaitforIbfClear(Instance);
+    WriteKcsCommand(Instance,KCS_WRITE_START);
+    Status = KcsCheckStatus(Instance,&KcsStatus);
+    if(KcsStatus.Bits.State !=KcsWriteState){
+    return KcsErrorExit(Instance);
     }
+    KcsClearObf(Instance);
+    for(i=0; i<DataSize-1; i++) {
+        WriteKcsData(Instance,Data[i]);
+        Status = KcsCheckStatus(Instance,&KcsStatus);
+        if(EFI_ERROR(Status)) {
+            return EFI_DEVICE_ERROR;
+        }
+        if(KcsStatus.Bits.State !=KcsWriteState){
+            return KcsErrorExit(Instance);
+        }
+        KcsClearObf(Instance);
+    }
+    WriteKcsCommand(Instance,KCS_WRITE_END);
+    Status = KcsCheckStatus(Instance,&KcsStatus);
+    if(KcsStatus.Bits.State !=KcsWriteState){
+        return KcsErrorExit(Instance);
+    }
+    KcsClearObf(Instance);
+    WriteKcsCommand(Instance,Data[i]);
     ...
 }
 \end{lstlisting}
-如上代码所示，通过解析发送命令函数来说明与BMC系统的通信方式。
+如上代码所示，通过解析发送命令函数来说明与BMC系统的通信方式。发送函数接收主要的8位标识的命令信息，和命令
+数据大小，然后根据IPMI协议提供的KCS数据发送状态流，依次设置KCS命令和查询相关寄存器，配合数据接收寄存器的
+数据写入过程。代码的写入流程如图4-3。
+
+\begin{figure}[htb]
+    \label{ffs_format}
+    % 调整图片与上文的垂直距离 %
+    \vspace{0cm}   
+    % 调整图片图片与中文标题、中文标题与英文标题距离 %
+    \setlength{\abovecaptionskip}{0.3cm}
+    % 引用/fig/目录中的图片文件 %
+	\centering
+    \includegraphics[width=14cm]{kcs_write_transfer.png}
+    % 中文标题 %
+    \caption*{图 4-3 kcs模式数据写入流程}
+    % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
+    \setlength{\belowcaptionskip}{-0.7cm}
+    % 英文标题 %
+    \caption*{Figure 4-3 KCS Write Transfer Flow}
+\end{figure}
+
+如图4-3所示，是IPMI协议的KCS访问模式中数据写入BMC的执行流程，其中一共涉及到4种BMC寄存器的访问与操作，他们
+包括Data\_In\_R、Data\_Out\_R、Status\_R和Command\_R，其中Status\_R是查询BMC状态的寄存器，Data\_Out\_R
+和Data\_In\_R负责给BMC和外界系统如BIOS，提供数据的读出和写入缓存，用寄存器的方式来实现。Command\_R寄存器
+用来表示输入BMC系统的命令。
+\par 在图4-3中，首先等待Status\_R寄存器中的IBF标志位为0，表示此时没有数据输入到Data\_In\_R中。然后通过
+将WRITE\_START命令写入Command\_R寄存器，将BMC状态改变为wr\_start写入开始状态。随后通过查询Status\_R中的值，
+等待IBF标志位为0，表示BMC收到了WRITE\_START命令并判别有效；同时通过8位的状态寄存器获取到的值确认BMC此时的
+状态确实改变为了WRITE\_STATE。后面就进入了数据写入的循环中，由于KCS模式是按字节传输数据，因此为Command\_R
+寄存器设置两个命令分别为WRITE\_START和WRITE\_END来确定传入缓冲寄存器中的第一个和最后一个字节为单位的数据包。
+每写入一个字节的数据之后，都要通过Status\_R检查IBF位，确定数据输入是否有效，同时检查BMC是否还保持WRITE\_STATE
+状态。当根据数据size判断下一个字节是最后一个传输字节时，退出写入循环，并向Command\_R写入WRITE\_END命令，
+来通知BMC下一个字节是最后一个。写入最后一个字节的流程和前面循环中的写入流程一致。最后BMC的状态转换成了read，
+表示等待外部系统读取Data\_Out\_R中的返回值。
+
+\begin{table}[htb]
+    \label{tab:parametervalues}
+    % 设置表内行间距 %
+    \renewcommand\arraystretch{1.5}
+    % 设置表题目 %
+	\caption*{表 4-2 BMC状态寄存器标志位说明}
+	\caption*{Table 4-2 KCS Interface Status Register Bits}
+    \begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}ccl@{}}
+    % 表上线和表头 %
+	\toprule[0.75pt]
+    比特位  &名称  &\makecell[c]{描述}\\
+    % 表中线和表内容 %
+    \midrule[0.5pt]
+    0                             &OBF       &\quad 输出数据有效标志位\\
+    1                             &IBF       &\quad 输入数据有效标志位\\
+    2                             &SMS\_ATN  &\quad 表明BMC有事务需要软件系统处理\\
+    3                             &C\_D\_n   &\makecell[l]{
+                                              \quad 表明最后写入的是Command\_R还是\\
+                                                    Data\_In\_R，“1”表示 Command\_R\\
+                                            }\\
+    5：4                          &OEM       &\quad 保留标志位\\
+    7：6                          &S1:S0     &\quad KCS读写状态机状态\\
+    % 表下线 %
+	\bottomrule[0.75pt]
+    \end{tabular*}
+    % 表格与下文距离 %
+    \vspace{-0.3cm}
+\end{table}
+
+如表4-2所示，其中7：6也就是bit7和bit6形成一个四种情况的状态组合，有限状态机组合情况如下：
+\par 00：IDLE\_STATE，表示KCS接口是空闲的，外部系统不应预期收到或向其发送任何数据。
+\par 01：READ\_STATE，读状态表示BMC正在向外部系统传输一个一字节大小的数据包，此时外部系统也应处于对应的
+读取信息状态。
+\par 10：WRITE\_STATE，写状态表示BMC正在从外部系统接收一个数据包，此时外部系统需要向BMC写入一个命令。
+\par 11：ERROR\_STATE，表示BMC在接口级别检测到协议违规，或者传输已中止。外部系统可以使用Get\_Status
+控制代码来请求错误的性质，也可以仅重新执行该命令。下面将介绍UEFI BIOS从BMC获取返回值的流程。
+
+\begin{figure}[htb]
+    \label{ffs_format}
+    % 调整图片与上文的垂直距离 %
+    \vspace{0cm}   
+    % 调整图片图片与中文标题、中文标题与英文标题距离 %
+    \setlength{\abovecaptionskip}{0.3cm}
+    % 引用/fig/目录中的图片文件 %
+	\centering
+    \includegraphics[width=14cm]{kcs_write_transfer.png}
+    % 中文标题 %
+    \caption*{图 4-3 kcs模式数据写入流程}
+    % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
+    \setlength{\belowcaptionskip}{-0.7cm}
+    % 英文标题 %
+    \caption*{Figure 4-3 KCS Write Transfer Flow}
+\end{figure}
+
 
 %
 % 4.4节
 %
-\section{固件和硬盘访问模块设计}
+\section{UEFI启动阶段详细设计}
 
 \subsection{固件访问设计}
 
