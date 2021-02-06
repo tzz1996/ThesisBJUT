@@ -400,6 +400,8 @@ GetStatus函数则用于读取特定的BMC寄存器，并按位解析BMC状态�
 结构中，并通过gBS->InstallMultipleProtocolInterfaces，Boot Service中的安装协议函数通过
 gEfiIpmiInterfaceProtocolGuid协议的全局标识信息，安装于EFI\_IPMI\_INSTANCE结构的Handle字段中。
 
+\subsubsection{发送数据过程}
+
 \begin{lstlisting}
 EFI_STATUS
 EFIAPI
@@ -510,6 +512,14 @@ IpmiSendCommand (
 \par 11：ERROR\_STATE，表示BMC在接口级别检测到协议违规，或者传输已中止。外部系统可以使用Get\_Status
 控制代码来请求错误的性质，也可以仅重新执行该命令。下面将介绍UEFI BIOS从BMC获取返回值的流程。
 
+\subsubsection{接收数据过程}
+KCS访问模式下外部系统读取BMC数据过程，所使用到的寄存器信息与发送过程一致。如图4-4所示，由于在外部系统写入
+数据到BMC后，BMC状态机转换位等待读取的状态，因此首先检查IBF标志位保证上一次输入BMC的数据有效后，检查状态
+是否为READ\_STATE，此状态为读取BMC数据的循环判断状态。当状态有效时，在OBF为1，保证输出有效的情况下，读取
+DATA\_OUT中的一字节数据，随后再向DATA\_IN中写入READ，通过外部系统将BMC设置为READ\_STATE，然后进入读取循环。
+直到读取完最后一个字节后，并由外部系统写READ指令后，BMC改变自身状态为IDLE\_STATE，以此来退出读取循环，并
+写入输出缓存一个dummy字节。外部系统读取dummy字节后，完成整个读取操作。
+
 \begin{figure}[htb]
     \label{ffs_format}
     % 调整图片与上文的垂直距离 %
@@ -518,32 +528,30 @@ IpmiSendCommand (
     \setlength{\abovecaptionskip}{0.3cm}
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=14cm]{kcs_write_transfer.png}
+    \includegraphics[width=10.6cm]{kcs_read_transfer.png}
     % 中文标题 %
-    \caption*{图 4-3 kcs模式数据写入流程}
+    \caption*{图 4-4 kcs模式数据读取流程}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 4-3 KCS Write Transfer Flow}
+    \caption*{Figure 4-4 KCS Read Transfer Flow}
 \end{figure}
-
 
 %
 % 4.4节
 %
-\section{UEFI启动阶段详细设计}
+\section{UEFI启动阶段补充说明}
 
-\subsection{固件访问设计}
+\subsection{SEC阶段设计}
+由于SEC阶段是此可信链中的信任根，因此SEC阶段的数据内容安全可信，又因为SEC阶段占有很少的系统资源，仅有很小的
+临时内存，因此不涉及BMC的交互功能，将SEC阶段度量PEI core的基准值信息，也就是PEI core的SHA1散列值，和临时的
+SHA1算法，集成在SEC core的代码中，以此来完成阶段度量的任务。SEC阶段的BMC日志信息的输出由于不借助IPMI协议，
+因此不需要BMC驱动程序，只需调用上述BMC串口写入函数，即可将日志信息写入BMC芯片中。
 
-\subsection{硬盘访问设计}
-%
-% 4.5节
-%
-\section{BMC通信模块设计}
+\subsection{PEI阶段设计}
 
-\subsection{BMC驱动设计}
+\subsection{DXE阶段驱动依赖关系}
 
-\subsection{BMC驱动度量方式}
 %
 % 4.5节
 %
