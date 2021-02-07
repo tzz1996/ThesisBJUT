@@ -54,9 +54,6 @@ typedef struct SHAstate_st {
 就需要5个链接变量，因此h0-h4用来在SHA\_Init过程中初始化并存储这5个链接变量用于度量过程中的计算。其中
 的SHA\_LBLOCK变量的扩展值为64，意味着SHA1在进行分组运算时，每一组的长度为512bits及64Bytes。
 
-%
-% 4.2节
-%
 \subsection{固件文件系统访问模块}
 固件文件系统访问模块用于给可信度量值计算模块提供各个阶段的核心代码和DXE阶段的文件系统协议栈驱动程序在FV
 固件卷中的数据信息。需要根据FV固件卷中FFS固件文件系统的数据格式提取出对应的核心或驱动文件的Image信息。
@@ -248,9 +245,6 @@ typedef struct {
 其中ImageBase就是记录内存中PE32格式文件的起始地址，ImageSize提供了文件的大小，通过把PE32格式驱动映像
 文件加载到指定地址，并将其记录在这两个变量中，就可以在度量时获取到驱动文件内容。
 
-%
-% 4.3节
-%
 \subsection{硬盘文件系统访问模块}
 硬盘文件系统访问模块提供FAT文件系统中ESP分区内系统文件数据的加载过程，此模块由BDS core代码调用，用来
 将指定硬盘文件数据加载到UEFI内存中，过程如下所示。
@@ -478,11 +472,11 @@ IpmiSendCommand (
 \begin{table}[htb]
     \label{tab:parametervalues}
     % 设置表内行间距 %
-    \renewcommand\arraystretch{1.5}
+    \renewcommand\arraystretch{1.3}
     % 设置表题目 %
 	\caption*{表 4-2 BMC状态寄存器标志位说明}
 	\caption*{Table 4-2 KCS Interface Status Register Bits}
-    \begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}ccl@{}}
+    \begin{tabular*}{\hsize}{@{\hspace{20pt}}@{\extracolsep{\fill}}ccl@{}}
     % 表上线和表头 %
 	\toprule[0.75pt]
     比特位  &名称  &\makecell[c]{描述}\\
@@ -538,7 +532,7 @@ DATA\_OUT中的一字节数据，随后再向DATA\_IN中写入READ，通过外�
 \end{figure}
 
 %
-% 4.4节
+% 4.2节
 %
 \section{UEFI启动阶段补充说明}
 
@@ -549,12 +543,137 @@ SHA1算法，集成在SEC core的代码中，以此来完成阶段度量的任�
 因此不需要BMC驱动程序，只需调用上述BMC串口写入函数，即可将日志信息写入BMC芯片中。
 
 \subsection{PEI阶段设计}
+PEI阶段的BMC通信功能的实现与DXE阶段实现过程相同，唯一不同点在于BMC驱动中的系统调用。其中PEI阶段的BMC通信模块
+需要调用名为EFI\_PEI\_SERVICES的PEI阶段核心服务结构体，也就是PEI阶段的系统服务，而DXE阶段的BMC通信模块需要
+调用EFI\_SYSTEM\_TABLE也就是DXE阶段的系统服务。PEI和DXE两个阶段不同的系统服务都是在过程开始阶段，通过前一
+阶段传来的HOB数据结构，分别是SEC阶段和PEI阶段建立的HOB，来确定系统函数的初始化工作。由于在两个不同阶段的BMC
+通信模块中，都需要使用系统函数来进行一些UEFI系统缓存的建立，因此必须要分开实现。
+
+\begin{lstlisting}
+EFI_STATUS
+EFIAPI
+PeiServicesLocatePpi (
+    IN CONST EFI_GUID                   *Guid,
+    IN UINTN                      Instance,
+    IN OUT EFI_PEI_PPI_DESCRIPTOR **PpiDescriptor,
+    IN OUT VOID                   **Ppi
+)
+\end{lstlisting}
+还有一方面必须两个阶段分开实现BMC通信模块的原因在于，PEI阶段是通过PEIM安装的PPI接口来实现PEIM之间的通信，
+以及PEI core对PEIM实现的功能函数的调用，通过上面的代码把以通过加载PEIM安装到系统的PPI找到，并存放在**PPI
+指针中。而DXE阶段则是通过Protocol来进行驱动函数的安装及调用。PPI的安装和查找调用也是通过EFI\_PEI\_SERVICES
+来进行系统调用实现的。
+\par 由于PEI阶段设计为只度量DXE core核心代码，并且PEI阶段存在着两次驱动加载过程，分别是临时内存的关键PEIM
+加载，这个目的是用最少的系统资源初始化post memory永久内存；永久内存建立后，再次调用PEIM的调度程序，将PEIM
+加载到永久内存中。而DXE core入口函数需要在第二次永久内存中调用，因此，只需在第二次加载PEI阶段的可信度量PEIM
+即可，这样可以减少系统不必要的加载PEIM带来的开销，具体流程如图3-10所示。
+\par 在PEI阶段的PEIM调度程序中，会通过PEI core句柄中的FvPpi调用其中的GetFileInfo函数，将PEIM的信息存放在
+EFI\_FV\_FILE\_INFO结构体中，因此可以通过EFI\_FV\_FILE\_INFO中的EFI\_GUID字段，来判断此PEIM是否为PEI
+阶段的可信度量模块，若是，则通过EFI\_PEI\_SERVICES中的PeiMemoryInstalled布尔类型的变量来确定此次调度器
+的调用是否在永久内存中，若是，再进行此可信度量模块的加载，否则跳过。由于PEI core和DXE core不是平台相关的，
+因此大部分平台都会调用相同的EDKII实现的PEI和DXE核心程序和调度程序，此处提到的变量名称与EDKII开源项目中的名称
+统一。
 
 \subsection{DXE阶段驱动依赖关系}
+依赖关系是UEFI中一个调度程序相关的事项，存在于PEI调度程序和DXE调度程序中。由于PEI阶段的安全方案设计是通过
+手动控制修改调度程序代码，来实现最后加载可信度量的PEIM，因此不存在依赖关系的建立。而DXE阶段驱动众多，需要
+度量的文件系统协议栈驱动程序和BDS core代码项目也较多，因此需要借助UEFI提供的依赖关系表达式来实现可信度量
+模块驱动在四个文件系统驱动前进行加载，这样才能在加载四个文件系统驱动时调用可信度量驱动中的IPMI协议来实现
+系统加载驱动前进行度量。
+\par 依赖关系表达式存储于图4-1中对应的dependency section中，存储在依赖项部分中的依赖项表达式设计得较小，
+以节省空间。另外，它们的设计理念为简单、快速，以减少执行开销。通过设计一个小的基于堆栈的指令集来对依赖项
+表达式进行编码，可以实现这两个目标。DXE分派器必须为此指令集实现一个解释器，以便评估依赖项表达式。
+
+\begin{table}[H]
+    \label{tab:parametervalues}
+    % 设置表内行间距 %
+    \renewcommand\arraystretch{1.3}
+    % 设置表题目 %
+	\caption*{表 4-3 依赖表达式命令摘要}
+	\caption*{Table 4-3 Dependency Expression Opcode Summary}
+    % @{\hspace{0pt}}用来表示表中每列的间隔 %
+    \begin{tabular*}{\hsize}{@{\hspace{0pt}}ccl@{\hspace{0pt}}}
+    % 表上线和表头 %
+	\toprule[0.75pt]
+    执行代码  &命令  &\makecell[c]{描述}\\
+    % 表中线和表内容 %
+	\midrule[0.5pt]
+    0x00    &BEFORE <File Name GUID>  &\quad 在提供的GUID表示的驱动前加载此驱动\\
+    0x01    &AFTER <File Name GUID>   &\quad 在提供的GUID表示的驱动后加载此驱动\\
+    0x02    &PUSH <Protocol GUID>     &\makecell[l]{
+                                       \quad 向栈中添加一个布尔类型的变量，如果这\\
+                                             个GUID表示的协议在句柄数据库中，则添\\
+                                             加TRUE，否则添加FALSE\\
+                                        }\\
+    0x03    &AND                      &\quad 与运算，用于判断栈中判断结果\\
+    0x04    &OR                       &\quad 或运算，用于判断栈中判断结果\\
+    0x05    &NOT                      &\makecell[l]{
+                                       \quad 出栈一个布尔值，通过非运算计算后，将\\
+                                             结果添加进栈\\
+                                        }\\
+    0x06    &TRUE                     &\quad 表示总判断结果为真\\
+    0x07    &FALSE                    &\quad 表示总判断结果为假\\
+    0x08    &END                      &\quad 依赖表达式的结束标志符\\
+    0x09    &SOR                      &\quad 表示驱动还未加载，等同于NOP效果\\
+    % 表下线 %
+	\bottomrule[0.75pt]
+    \end{tabular*}
+    % 表格与下文距离 %
+    \vspace{-0.3cm}
+\end{table}
+
+如表4-3所示，是DXE阶段的依赖表达式命令集，PEI阶段的依赖表达式除了没有BEFORE和AFTER之外，其他命令与
+DXE阶段相同。UEFI系统中，通过INF文件的[Protocols]字段下添加协议名称，可以通过EDKII的BaseTool目录下
+的依赖表达式相关的词法语法分析器，形成对应的依赖表达式，并通过编译存储与驱动文件的dependency section中。
+除了通过这种方式，还可以通过手写依赖文件的方式确定驱动的加载优先级。通过编写后缀名为dxs的驱动依赖文件，
+也可以达到将此信息写入FV中驱动的dependency section的目的。
+\par 在DXE调度器解析dependency section时，会根据每一个GUID向依赖栈中压入句柄数据库中此协议或驱动的
+查询结果，然后发现END结束符时，在通过AND这样的各个结果判断关系，依次将布尔值出栈，最后通过最终的依赖
+表达式确定此驱动是否在此轮进行调度加载。FV固件卷中的依赖表达式事例如图4-5。
+
+\begin{figure}[htb]
+    \label{ffs_format}
+    % 调整图片与上文的垂直距离 %
+    \vspace{0cm}   
+    % 调整图片图片与中文标题、中文标题与英文标题距离 %
+    \setlength{\abovecaptionskip}{0.3cm}
+    % 引用/fig/目录中的图片文件 %
+	\centering
+    \includegraphics[width=10cm]{fv_depex.png}
+    % 中文标题 %
+    \caption*{图 4-5 固件卷依赖表达式存储}
+    % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
+    \setlength{\belowcaptionskip}{-0.7cm}
+    % 英文标题 %
+    \caption*{Figure 4-5 Dependency Expression In Firmware Volume}
+\end{figure}
+
+如图4-5所示，FV中有一个Priori File用来描述系统规定的强类型优先级关系，即这个优先级文件中规定的加载顺序
+必须严格按照规定执行。而依赖表达式则属于弱类型优先关系，原因是UEFI通过一个队列来控制每一轮通过调度程序
+加载驱动，依赖表达式只能保证若此轮此驱动所依赖的协议或其他驱动已加载完成，则保证此驱动在此轮加载，而不能
+保证的是此驱动的精确加载顺序。如图中所示，Security、Runtime和Variable驱动严格按照顺序加载，而依赖于CPUIO
+协议的Metronome和Reset驱动则只要系统完成CPUIO协议的加载，则加载这两个驱动，但不能保证这两个驱动加载的
+先后顺序，因此名为弱类型。
+\par 此安全方案中驱动顺序的具体调整，就是通过在四个文件系统协议栈驱动程序的INF文件中的[Protocols]字段下
+添加可信度量驱动所生成的IPMI协议和SHA1计算协议即可。也可通过编写dxs依赖文件来对可信度量驱动和四个文件系统
+协议栈驱动程序的加载顺序进行自定义，实现方法如下。
+
+\begin{lstlisting}
+DEPENDENCY_START
+    EFI_SHA1_PROTOCOL_GUID                    AND
+    EFI_IPMI_INTERFACE_PROTOCOL_GUID
+DEPENDENCY_END
+\end{lstlisting}
+\par 最后在四个UEFI文件系统协议栈驱动程序的INF文件的[nmake.common]字段下，引用依赖文件DPX\_SOURCE=
+FileSysStack.dxs，从而将dxs文件添加进驱动文件的编译过程。
 
 %
-% 4.5节
+% 4.3节
 %
 \section{本章小结}
-
+本章节介绍了此安全方案的各个模块的详细设计即关键数据结构和协议的代码实现，其主要包括DXE和BDS阶段
+起作用的可信度量驱动，也包括其中的驱动文件度量模块、硬盘文件度量模块、hash算法模块和BMC通信模块，也有
+负责缓存硬盘文件和FV中驱动文件的中间层模块。然后介绍了PEI和DXE阶段分成两个可信度量驱动实现的理由，
+以及SEC阶段、PEI阶段的详细设计思路，最后是DXE阶段依赖表达式的利用方法，以确保DXE调度程序按照安全方案
+的预期顺序按序调度加载DXE驱动程序。
 
