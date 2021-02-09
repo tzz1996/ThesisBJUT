@@ -115,7 +115,7 @@ edksetup程序的初始化工作，这个程序的目的在于为正在打开着
 与真机环境对应的是Windows系统下的UEFI模拟运行环境，建立这个环境的目的在于，能够简化固件开发过程中调试的
 复杂程度，通过模拟环境测试一些硬件结构不相关的功能模块运行效果，增加开发效率。其中具体信息如下：
 \par （1）固件编译系统环境：Windows 10
-\par （2）固件编译工具：VS2018
+\par （2）固件编译工具：VS2008
 \par （3）EDKII信息：EDKIIR13995版本
 \par 模拟环境的编译较为简单因此不做详细说明，编译效果图如图5-5。其中是GenFds命令生成最终fd固件文件的过程，
 固件名称为NT32.fd。
@@ -206,30 +206,103 @@ Maintance维护工具。通过lazyrrk 30 0命令获取BMC日志信息，其中�
 \section{BMC驱动连通性验证}
 
 \subsection{测试目的}
+在可信度量驱动程序的开发过程中，需要一个从BMC系统取出基准值的过程，通过单独测试UEFI BIOS中BMC驱动程序
+的连通性有助于单独功能地调试可信度量驱动，保证BMC驱动的可用性。
+
+\subsection{测试步骤}
+（1）编写DXE阶段的BMC驱动程序，编写BMC的BIOS SHELL命令，可输入IPMI指令和内容，并获取到BMC返回的结果。
+将BMC驱动的INF文件添加到申威平台描述文件dsc文件中。
+\par （2）然后通过本章第一节中的方法，对申威UEFI组件进行交叉编译。
+\par （3）通过BMC提供的烧写功能烧写BIOS固件。
+\par （4）服务器上电并按下开机按钮，按F12进入到UEFI界面并通过SHELL启动方式进入到UEFI SHELL环境。
+\par （5）输入开发好的BMC命令，并从SHELL界面查看结果。
 
 \subsection{测试过程}
+虽然SHELL作为UEFI BIOS系统中的一个上层用户程序，但作为BIOS来说，并不区分内核和用户的内存访问区域，因此
+SHELL程序依然可以访问到UEFI初始化的一切系统资源，为驱动的测试提供了基础。如图5-7所示，是通过名为bmc\_kcs
+的SHELL命令发送并接收数据的过程。
+
+\begin{figure}[H]
+    \label{ffs_format}
+    % 调整图片与上文的垂直距离 %
+    \vspace{0cm}   
+    % 调整图片图片与中文标题、中文标题与英文标题距离 %
+    \setlength{\abovecaptionskip}{0.3cm}
+    % 引用/fig/目录中的图片文件 %
+	\centering
+    \includegraphics[width=12cm]{bmc_kcs.png}
+    % 中文标题 %
+    \caption*{图 5-7 BMC命令运行结果}
+    % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
+    \setlength{\belowcaptionskip}{-0.7cm}
+    % 英文标题 %
+    \caption*{Figure 5-7 BMC command results}
+\end{figure}
+
 %
 % 5.4节
 %
-\section{固件文件存储格式验证}
+\section{依赖表达式验证}
 
 \subsection{测试目的}
+依赖表达式是PEI和DXE驱动加载阶段的加载顺序的主要依据，他与优先级文件对应，属于弱类型。通过验证依赖表达式
+在固件文件中的存储以及在驱动加载过程中如何控制加载顺序，可确保可信度量驱动在需被度量的特定驱动前加载，保证
+度量功能的可用性。
+
+\subsection{测试步骤}
+（1）在DXE core代码的调度器程序中添加向SHELL输出的DEBUG函数。
+\par （2）通过配置VS2008来对UEFI BIOS进行编译，得到NT32.fd文件。
+\par （3）通过UEFITool这个fd文件解析程序，对NT32.fd进行解析。
+\par （4）运行模拟程序的入口点exe可执行文件，根据SHELL输出的DEBUG信息得到依赖表达式解析过程。
 
 \subsection{测试过程}
-%
-% 5.5节
-%
-\section{修改驱动加载顺序验证}
+在经过VS2008编译器编译后生成Windows平台的UEFI模拟环境固件文件，通过UEFITool工具查看到的文件信息如下。
 
-\subsection{测试目的}
+\begin{figure}[H]
+    \label{ffs_format}
+    % 调整图片与上文的垂直距离 %
+    \vspace{0cm}   
+    % 调整图片图片与中文标题、中文标题与英文标题距离 %
+    \setlength{\abovecaptionskip}{0.3cm}
+    % 引用/fig/目录中的图片文件 %
+	\centering
+    \includegraphics[width=12cm]{fd_depex.png}
+    % 中文标题 %
+    \caption*{图 5-8 固件文件依赖区域内容}
+    % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
+    \setlength{\belowcaptionskip}{-0.7cm}
+    % 英文标题 %
+    \caption*{Figure 5-8 FD file dependency section content}
+\end{figure}
 
-\subsection{测试过程}
-%
-% 5.6节
-%
-\section{结果分析}
+图5-8所示的是DXE阶段的TimerDxe驱动在FV格式的固件卷中的dependency section中的内容，两个GUID分别代表两个
+协议，他们对应的名称是gEfiCpuArchProtocolGuid和gEfiPcdProtocolGuid。下面是运行过程中TimerDxe驱动对应
+的加载过程日志信息显示。
+
+\begin{figure}[H]
+    \label{ffs_format}
+    % 调整图片与上文的垂直距离 %
+    \vspace{0cm}   
+    % 调整图片图片与中文标题、中文标题与英文标题距离 %
+    \setlength{\abovecaptionskip}{0.3cm}
+    % 引用/fig/目录中的图片文件 %
+	\centering
+    \includegraphics[width=12cm]{timer_depex.png}
+    % 中文标题 %
+    \caption*{图 5-9 驱动加载过程中的日志信息}
+    % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
+    \setlength{\belowcaptionskip}{-0.7cm}
+    % 英文标题 %
+    \caption*{Figure 5-9 Log information during driver loading}
+\end{figure}
+
+图5-9显示的是在通过SecMain.exe入口点或命令build run执行后在windows终端里打印显示的BIOS运行过程中的日志
+信息，其中可以看到入栈两个协议GUID的过程，并可以看出判断的最终结果为TRUE，在这段log的下方可看到显示了驱动
+加载的日志信息。
 
 %
 % 5.6节
 %
 \section{本章小结}
+通过三个实验过程的结果可以看出，可信度量驱动具备着从BMC取基准值、生成度量日志和根据依赖表达式定制驱动加载
+顺序的功能，这些基本的功能也保证了安全方案的可实现性。
