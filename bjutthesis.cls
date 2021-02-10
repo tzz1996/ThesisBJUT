@@ -206,7 +206,7 @@
   }
   
 \NewDocumentEnvironment{APP2}{o}{%
-    \thu@chapter*{攻读硕士学位期间发表的学术论文}
+    \thu@chapter*{攻读硕士学位期间所取得的学术成果}
   }
    
   

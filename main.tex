@@ -19,6 +19,11 @@
 %      \begin{table}[H]
 \usepackage{float}
 \usepackage{longtable}
+% 引用GB/T 7714—2015的国家引用标准 %
+\usepackage{gbt7714}
+% 同一处引用多个参考文献
+% 用法：\cite{name1,name2,...,nameN}
+\usepackage{natbib}
 
 %
 % 代码段引用设置
@@ -100,7 +105,10 @@
 %
 % 参考文献
 %
-\bibliographystyle{bjutthesis}
+%\bibliographystyle{bjutthesis}
+
+% 引用GB/T 7714—2015的国家引用标准 %
+\bibliographystyle{gbt7714-numerical}
 \bibliography{ref/refs}
 \bjutclearpage
 
