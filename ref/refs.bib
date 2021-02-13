@@ -101,9 +101,9 @@
   year={2017}
 }
 
-%=================
+%=====================================================================================================
 % tzz thesis refs
-%=================
+%=====================================================================================================
 
 %
 % english refs
@@ -298,9 +298,9 @@
   year={2013}
 }
 
-%
+%===================================================================================================
 % chinese refs
-%
+%===================================================================================================
 @article{chinese1,
   title={基于 UEFI 的嵌入式驱动程序的开发研究},
   author={崔莹 and 辛晓晨 and 沈钢纲 [2},
@@ -339,12 +339,16 @@
   title={基于 UEFI 的信任链设计及 TPM 驱动程序实现},
   author={刘东丽},
   year={2011},
+  address={武汉},
   school={华中科技大学}
 }
 
-@phdthesis{chinese6,
-  title={基于 UEFI 的 BIOS 信任链的研究},
-  author={王冠 and 闰彩霞},
+@article{chinese6,
+  title={基于UEFI的BIOS信任链的研究},
+  author={王冠 and 闫彩霞},
+  journal={微计算机信息},
+  number={05},
+  pages={162-163},
   year={2011}
 }
 
@@ -360,6 +364,7 @@
   title={UEFI BIOS 安全增强机制及完整性度量的研究},
   author={段晨辉},
   year={2014},
+  address={北京},
   school={北京工业大学}
 }
 
@@ -377,6 +382,7 @@
   title={基于 UEFI BIOS 的 EXT2 文件系统驱动的设计与实现},
   author={李梓实},
   year={2015},
+  address={北京},
   school={北京工业大学}
 }
 
@@ -384,6 +390,7 @@
   title={基于固件文件系统的 UEFI 安全机制研究},
   author={房强},
   year={2016},
+  address={成都},
   school={电子科技大学}
 }
 
@@ -391,10 +398,11 @@
   title={基于 UEFI 体系的虚拟 TPM 研究},
   author={朱东亮},
   year={2010},
+  address={哈尔滨},
   school={哈尔滨工程大学}
 }
 
-@article{chinese13,
+@article{chinese13@,
   title={UEFI 的异常中断处理驱动的设计与实现},
   author={陈书仪},
   journal={华中科技大学},
@@ -407,6 +415,7 @@
   title={基于不同处理器架构平台的 UEFI 系统的研究与移植},
   author={马骏},
   year={2014},
+  address={北京},
   school={北京工业大学}
 }
 
@@ -484,6 +493,7 @@
   title={UEFI 调试工具及调试信息获取的设计与实现},
   author={韩民},
   year={2014},
+  address={北京},
   school={北京工业大学}
 }
 
@@ -519,6 +529,7 @@
   title={基于 IPMI 的服务器管理系统的实现},
   author={王栩浩},
   year={2016},
+  address={上海},
   school={东华大学}
 }
 
@@ -588,5 +599,53 @@
   title={BMC寄存器手册},
   author={成都申威科技有限责任公司},
   address={成都市华府大道四段电子科大科技园 D22 栋},
+  publisher={申威},
   pages={4-7}
+}
+
+@patent{chineses35,
+  title={基于 UEFI 的硬盘全加密方法及装置},
+  author={陈小春，孙亮，张超，朱立森},
+  year={2019},
+  month=jun # "~3",
+  publisher={乌鲁木齐合纵专利商标事务所}
+}
+
+@patent{chineses36,
+  title={一种基于 UEFI 的可执行程序文件保护系统和方法},
+  author={陈小春，孙亮，张超，朱立森},
+  year={2014},
+  month=sep # "~10",
+  publisher={乌鲁木齐合纵专利商标事务所}
+}
+
+%===================================================================================================
+% online and software refs
+%===================================================================================================
+@online{extra1,
+  author     = {Bao Chuquan},
+  title      = {计算机那些事(2)——开机启动过程},
+  citedate    = {2016-12-14},
+  url        = {http://chuquan.me/2016/12/14/computer-boot-process}
+}
+
+@online{extra2,
+  author     = {UEFIblog},
+  title      = {DLL与UEFI的故事之二：通过实例观察DLL文件与EFI文件的关系},
+  citedate    = {2017-10-28},
+  url        = {https://zhuanlan.zhihu.com/p/30106517}
+}
+
+@online{extra3,
+  author     = {金步国},
+  title      = {GPT 分区详解},
+  citedate    = {2010-06-17},
+  url        = {http://www.jinbuguo.com/storage/gpt.html}
+}
+
+@software{extra4,
+  author     = {{TianoCore}},
+  title      = {EDK II Project},
+  publisher  = {UEFI Forum},
+  year       = {2008}
 }

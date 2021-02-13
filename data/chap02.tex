@@ -2,7 +2,6 @@
 % 第二章
 %
 \chapter{相关知识及技术介绍}
-\label{cha:tech&knowlege}
 
 %
 % 2.1节
@@ -15,7 +14,8 @@ UEFI文件系统协议栈相关内容及驱动程序介绍，还包括基板管�
 UEFI（Unified Extensible Firmware Interface，统一可扩展固件接口）定义了操作系统和平台固件直接的接口，
 UEFI 提供了一个统一可扩展的固件平台，并针对平台特性定义了一系列接口。该平台整体处于硬件与操作系统中间，
 平台最上层的可扩展固件接口包含了平台提供的 API 函数、启动时服务（EFI  Boot  Services）、运行时服务
-（EFI  Runtime Services）和操作系统引导程序，下层则是根据 UEFI 规范实现的平台固件。UEFI的平台架构
+（EFI  Runtime Services）和操作系统引导程序\cite{english21}，下层则是根据 UEFI 规范实现的平台固件。
+UEFI的平台架构
 如图 2-1 所示：
 
 \begin{figure}[htb]
@@ -45,7 +45,7 @@ UEFI Image包含三种：UEFI应用程序、UEFI驱动和OS Loaders，这些实�
 实现的。
 \par 从图中可以看出，UEFI的启动时服务Boot Service中包含了UEFI在PEI和DXE两个主要加载驱动完成
 系统初始化过程中所需要的驱动程序、内存管理、设备管理、协议贮存等信息。而UEFI的启动时服务也有他
-自己的生命周期，从下图就可以看出启动时服务在UEFI启动过程中的位置。
+自己的生命周期，从下图就可以看出启动时服务在UEFI启动过程中的位置\cite{chinese20}。
 
 \begin{figure}[htb]
     \label{bootint_sequence}
@@ -77,7 +77,7 @@ Boot Service服务，并继续向上层操作系统提供RunTime Service服务�
 \subsection{UEFI协议运作方式}
 UEFI中协议设计的思想为，由于UEFI的官方提供实现的版本为C语言实现，而C语言是一种面向过程的语言，而完全
 使用面向过程的思想来管理和使用众多UEFI协议将会使程序变得非常复杂。Protocol作为一种对象来设计管理会更加
-直观。因而UEFI中的Protocol引入了面向对象的思想，其中包括：
+直观\cite{english13,english12}。因而UEFI中的Protocol引入了面向对象的思想，其中包括：
 \begin{itemize}
 \item 用struct来模拟class。
 \item 用函数指针（Protocol的成员变量）模拟成员函数，此种函数的第一参数必须是指向Protocol的指针，用来
@@ -180,7 +180,7 @@ leProtocolInterfaces这样的加载协议函数，在众多UEFI应用以及底�
 %
 \section{UEFI固件文件系统数据存储方式介绍}
 UEFI固件文件系统指的是BIOS闪存芯片中的数据存储格式，它通过统一的固件文件系统标准用来统一闪存芯片中的文件
-内容和UEFI启动阶段内存中文件的内容。具体的固件中UEFI可执行程序文件存储格式如图2-4所示。
+内容和UEFI启动阶段内存中文件的内容\cite{chinese21}。具体的固件中UEFI可执行程序文件存储格式如图2-4所示。
 
 \begin{figure}[htb]
     \label{ffs_format}
@@ -213,7 +213,8 @@ UEFI BIOS中的文件系统协议栈指的是针对块设备，也就是对应�
 系统协议栈通过把对硬盘设备的不同操作功能分层起到区分和满足应用层与内核层不同功能需要的目的，下面本
 节将做具体的介绍。
 \subsection{总体介绍}
-UEFI BIOS和传统BIOS都支持硬盘的读写功能。UEFI优于传统BIOS的地方在于，UEFI还提供了对文件系统的支持。
+UEFI BIOS和传统BIOS都支持硬盘的读写功能。UEFI优于传统BIOS的地方在于，UEFI还提供了对文件系统的支持
+\cite{english18}。
 其中传统BIOS由于直接由汇编语言编写，实现内容十分依赖于具体的硬件平台，因此不易在运行流程中进行像对硬盘
 设备这种次要设备的过多交互，像ESP（EFI System Partition）分区中文件的操作也就只通过直接操作硬盘驱动
 程序来存取具体扇区中的数据内容。然而进入了UEFI时代，BIOS的实现得到了以C语言为具体实现工具并进行了国际
@@ -271,7 +272,7 @@ UEFI文件系统协议栈相关的驱动程序分别为：AtaatapiPassThruDxe、
 与ATA或SCSI总线进行数据交互的功能；PartitionDxe用于解析存储在硬盘ESP分区中的GPT分区表，用于获取到硬盘中数据
 的分区信息，磁盘在使用前都要进行分区，也就是将硬盘划分为一个个逻辑的区域，不同的分区上可装载不同的文件系统，以
 方便用户使用。
-GPT分区表示意图如图2-6所示。GPT(GUID Partition Table)：全局唯一标识磁盘分区表，是一个实体硬盘的
+GPT分区表示意图如图2-6所示。GPT(GUID Partition Table)：全局唯一标识磁盘分区表\cite{extra3}，是一个实体硬盘的
 分区表的结构布局的标准，是可扩展固件接口（EFI）标准，被用于替代BIOS系统中的一64bits来存储逻辑块地址和大小信
 息的主开机纪录（MBR）分区表，与普遍使用的主引导记录(MBR)分区方案相比，GPT提供了更加灵活的磁盘分区机制。
 LBA(Logical Block Addressing)逻辑块寻址模式将CHS这种三维寻址方式转变为一维的线性寻址，它把硬盘所有
@@ -304,27 +305,46 @@ FileSysDxe驱动则负责为UEFI提供与硬盘硬件相同的文件系统数据
 % 2.4节
 %
 \section{BMC技术介绍}
-BMC(Baseboard Management Controller)是一种专用芯片/控制器(叫做服务
-器处理器或基板管理控制器(BMC)，是基于IPMI系统的心脏；在IPMI管理平
-台中，系统管理软件对各个被管理器件的管理，都是通过与BMC通信来实现
-的。BMC并不依赖于服务器的处理器、BIOS或操作系统来工作，它有自己的
-固件、电源、MAC地址与网络接口，是一个单独在系统内运行的无代理管理子系统。
-\subsection{BMC在系统中的位置}
+BMC(Baseboard Management Controller)基板管理控制器是一种用于实时检测服务器硬件信息并具备独立运算能力的
+计算机系统中的组件，它通过IPMI协议与服务器中的其他硬件设备进行通信。在基于IPMI协议的管理平
+台中，系统对平台各个硬件设备的信息管理策略，都是通过与BMC通信并统计运算而实现
+的。BMC拥有除了独立处理器外的独立固件闪存、系统电源、网卡设备，是一个具有独立性的基于服务器平台的管理
+子系统。在如今的服务器国产化过程中，BMC越来越得到各个厂商的广泛使用。
 
 \subsection{BMC与BIOS通讯方式}
-IPMI接口作为一种智能平台管理接口如今已经成为通用接口的标准，有了
-它在管理硬件的时候更加方便。IPMI区别于其他的平台管理接口的地方在于，
-它不依赖系统的任何组件，只依靠自己就可以独立的完成工作，这使得用户只要
-接通电源，即使关机状态下也可以实现对服务器的监控。IPMI作为一种管理接
-口的标准，可以说基板管理控制器就是整个管理平台的心脏，拥有了它IPMI才
-能够准确把握每个传感器监测出来的数据，并把各类事件的日志储存起来。
-BIOS与BMC的通信方式正是使用了BMC与其他硬件之间通信的方法，也就是通过IPMI协议来进行二者的通信。
+IPMI协议作为BMC与服务器其他硬件设备通信的桥梁主要有两种通信方式，他们分别是BT（Block Transfer)接口
+和KCS（Keyboard Controller Style）接口，其中BT接口主要是用于传输数据的块传输，即最小传输单位设置为一块，
+256字节。而KCS接口主要用于以最小单位为一字节来进行数据传输。而在BIOS与BMC的通信过程中，主要使用BMC来
+进行一些度量过程中基准值的存储功能，因此使用KCS接口来进行通讯设计，以避免不必要的传输资源浪费。
+
+\begin{figure}[htb]
+    \label{ffs_format}
+    % 调整图片与上文的垂直距离 %
+    \vspace{0cm}   
+    % 调整图片图片与中文标题、中文标题与英文标题距离 %
+    \setlength{\abovecaptionskip}{0.3cm}  
+    % 引用/fig/目录中的图片文件 %
+	\centering
+    \includegraphics[width=12cm]{kcs_register.png}
+    % 中文标题 %
+    \caption*{图 2-7 KCS接口寄存器信息}
+    % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
+    \setlength{\belowcaptionskip}{-0.7cm}
+    % 英文标题 %
+    \caption*{Figure 2-7 KCS Interface Registers}
+\end{figure}
+
+如图2-7所示，为KCS接口所使用到的寄存器即相关信息，主要涉及到四个寄存器，分别是用来查看BMC此时状态的状态
+寄存器、用于指定BMC命令的命令寄存器、和两个分别用来进行数据输入和数据输出缓存的寄存器。有关这些寄存器具体
+使用方法和使用流程将在第四章的BMC驱动实现中做详细说明。
+
 %
 % 2.5节
 %
-\section{可信计算技术}
+%\section{可信计算技术}
 
-\subsection{可信计算信任链}
+%\subsection{可信计算信任链}
 
-\subsection{可信平台模块}
+%\subsection{可信平台模块}
 
+\bjutclearpage

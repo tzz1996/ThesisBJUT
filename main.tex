@@ -18,6 +18,7 @@
 % 用法：\begin{figure}[H]
 %      \begin{table}[H]
 \usepackage{float}
+% 引入自动跨页的长表格 %
 \usepackage{longtable}
 % 引用GB/T 7714—2015的国家引用标准 %
 \usepackage{gbt7714}
@@ -96,9 +97,13 @@
 \include{data/chap05}
 % \include{data/chap06}
 % \include{data/chap07}
-\include{data/chap@}
+% \include{data/chap@}
+
+%
+% 结论
+%
 \include{data/conclusion}
-\include{data/publications}
+% \include{data/publications}
 
 \backmatter
 
@@ -112,6 +117,10 @@
 \bibliography{ref/refs}
 \bjutclearpage
 
+%
+% 研究成果
+%
+\include{data/publications}
 %
 % 致谢
 %

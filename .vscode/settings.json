@@ -1,7 +1,9 @@
 {
+    //
+    // 设置编译工具和命令
+    //
     "latex-workshop.latex.tools": [
         {
-            // 编译工具和命令
             "name": "xelatex",
             "command": "xelatex",
             "args": [
@@ -31,6 +33,9 @@
         }
     ],
 
+    //
+    // 设置编译链
+    //
     "latex-workshop.latex.recipes": [
         {
             "name": "xelatex",
@@ -54,7 +59,7 @@
                 "xelatex",
                 "xelatex"
             ]
-        }
+        },
         /*
         {
             "name": "pdf->bib->pdf->pdf",
@@ -68,9 +73,15 @@
         */
     ],
 
+    //
+    // 设置外置浏览工具，并指定路径
+    //
     "latex-workshop.view.pdf.viewer": "external",
 
     "latex-workshop.view.pdf.external.viewer.command": "D:/Softwares/SumatraPDF-3.1.2-64/SumatraPDF.exe",
 
+    //
+    // 取消VSCODE的默认保存时编译设置
+    //
     "latex-workshop.latex.autoBuild.run": "never",
 }

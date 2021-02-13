@@ -56,7 +56,8 @@ typedef struct SHAstate_st {
 
 \subsection{固件文件系统访问模块}
 固件文件系统访问模块用于给可信度量值计算模块提供各个阶段的核心代码和DXE阶段的文件系统协议栈驱动程序在FV
-固件卷中的数据信息。需要根据FV固件卷中FFS固件文件系统的数据格式提取出对应的核心或驱动文件的Image信息。
+固件卷中的数据信息。需要根据FV固件卷中FFS固件文件系统的数据格式提取出对应的核心或驱动文件的Image信息
+\cite{english2}。
 但FV固件卷中存储的FFS格式的文件中并不只包含着可运行的EFI类型二进制文件，还有着许多标识着文件类型、文件
 修改信息等众多段信息，若要对UEFI各个阶段核心代码和特定驱动文件进行度量，必须确定需要度量的EFI可执行文件
 的data部分内容，以确保基准值的计算与UEFI启动过程中度量值的计算所计算的EFI数据内容统一。
@@ -85,7 +86,8 @@ typedef struct SHAstate_st {
 \end{figure}
 
 如图4-1所示，符合PI规范的FV固件卷文件包含主要两部分，其中一部分是如图所示的firmware volume header
-固件卷头部，另一部分是firmware volume data固件卷数据部分。其中固件卷头部用于描述此FV文件的所有属性信息，
+固件卷头部，另一部分是firmware volume data固件卷数据部分。其中固件卷头部用于描述此FV文件的所有属性信息
+\cite{extra2}，
 同时也包含了一个用来标识组织固件中数据存储格式的固件文件系统的UEFI全局标识符GUID。固件卷头部不仅可以支持
 UEFI特定的FFS固件文件系统，还支持一切符合PI规范的固件文件系统。
 \par 当UEFI系统加载FV中的文件信息时，首先识别固件卷头部，并用名为EFI\_FIRMWARE\_VOLUME\_HEADER的
@@ -306,7 +308,7 @@ EFI\_SIMPLE\_FILE\_SYSTEM\_PROTOCOL文件系统协议，将其安装在提供的
 在确定了GUID后，就需要在度量功能的代码中进行GUID的匹配，再进行驱动数据内容的度量。需要说明的是，在四个
 驱动程序中，由于UEFI使用的GPT分区格式和各个硬件设计为统一格式，因此PartitionDxe和DiskIoDxe驱动在各个
 真机平台上是统一的；而PassThruDxe和FileSys驱动需要根据不同的物理平台确定不同的驱动和特定GUID。这里采用
-的是申威6A型号服务器的具体驱动名称和GUID信息。
+的是申威6A型号服务器的具体驱动名称和GUID信息\cite{chinese7}。
 
 \begin{lstlisting}
 EFI_STATUS
@@ -369,7 +371,7 @@ SerialPortWrite (
 是一个系统写死的数值，内容为0xfffffc0000870000UL，用于记录PRINTCONFIG结构在IO映射地址的位置，此内容是
 在系统DXE阶段初始化过程中确定的。hard\_smp\_processor\_id是一段汇编代码用于计算cpuid。值得注意的是，
 这个串口写入函数是处理器体系结构相关的，因为PRINTCONFIG结构在计算地址时用到了cpuid值，并且在系统初始化时
-PRINTK\_BUF\_CONFIG值的内容也是根据具体物理真机系统的自定义而决定的。
+PRINTK\_BUF\_CONFIG值的内容也是根据具体物理真机系统的自定义而决定的\cite{chinese13}。
 \par 硬盘文件度量模块的逻辑与驱动度量模块相似，需要通过文件名来调用BMC通信模块，获取到BMC芯片中存储的文件
 基准值信息，并在内存中通过SHA1算出加载前的度量值，进行比较得到度量结果。
 
@@ -377,7 +379,7 @@ PRINTK\_BUF\_CONFIG值的内容也是根据具体物理真机系统的自定义�
 BMC通信模块是图3-13中所示的，在此安全方案中，属于DXE阶段和BDS阶段所使用的与BMC系统通信的功能模块。由于
 DXE和BDS阶段共同使用的是DXE阶段初始化的Boot Service和Runtime Service，因此保证了BMC通信模块中系统调用
 的统一性。由于需要通过BMC通信模块获取基准值，因此不光需要向BMC发送数据，还需要BMC处理并返回对应的结果，
-因此借助于IPMI协议来实现。
+因此借助于IPMI协议来实现\cite{chinese26}。
 
 \begin{lstlisting}
 struct _EFI_IPMI_INTERFACE_PROTOCOL {
@@ -436,7 +438,7 @@ IpmiSendCommand (
 \end{lstlisting}
 如上代码所示，通过解析发送命令函数来说明与BMC系统的通信方式。发送函数接收主要的8位标识的命令信息，和命令
 数据大小，然后根据IPMI协议提供的KCS数据发送状态流，依次设置KCS命令和查询相关寄存器，配合数据接收寄存器的
-数据写入过程。代码的写入流程如图4-3。
+数据写入过程\cite{english22}。代码的写入流程如图4-3。
 
 \begin{figure}[htb]
     \label{ffs_format}
@@ -498,7 +500,7 @@ IpmiSendCommand (
     \vspace{-0.3cm}
 \end{table}
 
-如表4-2所示，其中7：6也就是bit7和bit6形成一个四种情况的状态组合，有限状态机组合情况如下：
+如表4-2所示，其中7：6也就是bit7和bit6形成一个四种情况的状态组合，有限状态机组合情况如下\cite{chineses34}：
 \par 00：IDLE\_STATE，表示KCS接口是空闲的，外部系统不应预期收到或向其发送任何数据。
 \par 01：READ\_STATE，读状态表示BMC正在向外部系统传输一个一字节大小的数据包，此时外部系统也应处于对应的
 读取信息状态。
@@ -571,7 +573,7 @@ PeiServicesLocatePpi (
 EFI\_FV\_FILE\_INFO结构体中，因此可以通过EFI\_FV\_FILE\_INFO中的EFI\_GUID字段，来判断此PEIM是否为PEI
 阶段的可信度量模块，若是，则通过EFI\_PEI\_SERVICES中的PeiMemoryInstalled布尔类型的变量来确定此次调度器
 的调用是否在永久内存中，若是，再进行此可信度量模块的加载，否则跳过。由于PEI core和DXE core不是平台相关的，
-因此大部分平台都会调用相同的EDKII实现的PEI和DXE核心程序和调度程序，此处提到的变量名称与EDKII开源项目中的名称
+因此大部分平台都会调用相同的EDKII\cite{extra4}实现的PEI和DXE核心程序和调度程序，此处提到的变量名称与EDKII开源项目中的名称
 统一。
 
 \subsection{DXE阶段驱动依赖关系}
