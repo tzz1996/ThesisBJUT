@@ -19,7 +19,7 @@
   cdegree={工程硕士专业学位},
   csupervisor={张建标\ \ 教授},
   ccollege={信息学部计算机学院},  
-  cdate={2020年12月},
+  cdate={2021年6月},
   corganization={北京工业大学},
   %
   %=========
@@ -27,7 +27,7 @@
   %=========
   % ecovertype={MASTERAL\  DISSERTATION}, % 学硕
   ecovertype={PROFESSIONAL\  master\  DISSERTATION}, % 专硕
-  etitle={Research on Multi-view Complementarity based SLAM},
+  etitle={Research and Implementation of Hard Disk File Security Loading Strategy Based on UEFI},
   edegree={Master of Engineering},
   emajor={Computer Science and Technology},
   eauthor={Tang Zhizhong},
@@ -65,8 +65,45 @@ ESP分区的组织结构，研究UEFI BIOS环境中读取硬盘文件的方式�
 
 \begin{eabstract}
 
-English abstract
+With the development of science and technology, more and more computer upper-level applications 
+have been greatly developed, such as artificial intelligence, blockchain, and the Internet of Things. 
+The development and popularity of these technologies depend on operating systems. Or the functional 
+support and security guarantee of the lower-level system. According to the national standard of 
+"Information Security Technology Network Security Graded Protection Basic Requirements", critical 
+systems in actual operation need to be trusted at various stages. As a low-level system specification 
+that replaces traditional BIOS in recent years, UEFI specification has been widely used from servers 
+of various organizations to personal computers of everyone. UEFI BIOS has been greatly enhanced in 
+terms of scalability, development efficiency, and development difficulty. However, it is this C 
+language that replaces the traditional assembly language program, which makes UEFI BIOS also subject 
+to C language code attacks. The unified specification development method of the processor 
+architecture also provides more conditions for attacking the underlying firmware system. 
+Starting the operating system from a block device such as a hard disk through UEFI BIOS is 
+still the mainstream system startup method today. It involves not only the possibility of the 
+hard disk device being attacked, but also the firmware system level attack, such as the UEFI 
+file system. Such internal logic of operating the hard disk makes it easier to receive 
+targeted attacks that threaten the security of hard disk files. Therefore, it is of great 
+significance to study the secure loading of UEFI-based hard disk files. The main work of this 
+paper is as follows:
+\par （1）In view of the security threats in the process of loading hard disk files in the UEFI 
+BIOS system, the organization structure of the ESP partition of the hard disk device used to store 
+the accessible data in the UEFI BIOS environment is studied, the method of reading hard disk files 
+in the UEFI BIOS environment, and the research UEFI-type drivers are used as the basic credibility 
+measurement mechanism to ensure file security against hard disk device attacks. Combining with 
+the theory of trusted computing, a general framework for trusted loading of hard disk device files 
+based on UEFI is proposed, and the security and trustworthiness of the process of loading hard 
+disk files in the UEFI BIOS environment is studied.
+\par （2）Aiming at the design of the boot phase of the UEFI BIOS system, by studying the loading 
+functions and characteristics of each phase, combined with trusted computing technology, determine 
+the code content in the firmware chip that needs to be measured at each phase, and the first phase 
+of UEFI boot as the entire system The root of trust measures the core code of the later stages 
+one by one, and passes the chain of trust stage by stage until the BDS stage of UEFI loading hard 
+disk files to ensure the security and credibility of the system before loading files.
+\par （3）Aiming at the trusted computing platform used in the system, the BMC system is designed 
+as a trusted platform, and the BMC communication protocol and interface
+Carry out the development of communication functions, and according to the characteristics of the 
+UEFI boot phase, design the PEI phase and the DXE phase to develop the BMC driver program separately 
+to achieve each Phase measures the effect of specific drivers and codes.
 
 \end{eabstract}
 
-\ekeywords{simultaneous localization and mapping, multi-view complementarity, bundle adjustment, line sequence optimization, complex feature optimization}
+\ekeywords{UEFI, File system protocol stack, BMC, trusted computing, Chain of trust}
