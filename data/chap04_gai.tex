@@ -279,17 +279,6 @@ EFI\_SIMPLE\_FILE\_SYSTEM\_PROTOCOL文件系统协议，将其安装在提供的
 驱动程序中，由于UEFI使用的GPT分区格式和各个硬件设计为统一格式，因此PartitionDxe和DiskIoDxe驱动在各个
 真机平台上是统一的；而PassThruDxe和FileSys驱动需要根据不同的物理平台确定不同的驱动和特定GUID。这里采用
 的是申威6A型号服务器的具体驱动名称和GUID信息\cite{chinese7}。
-
-\par 驱动度量函数首先根据传进来的内存中的驱动数据结构表示，判别驱动类型，由于四个文件系统协议栈驱动都属于
-EFI\_IMAGE\_SUBSYSTEM\_EFI\_RUNTIME\_DRIVER类型，因此可以通过这个条件进行初步判断。在确定驱动类型正确
-之后，进行GUID的判别，其中的四个特定驱动程序GUID通过INF文件获取的方式写死在代码中。若确定此正在加载的驱动
-是四个驱动之一，则通过可信度量值计算模块中的SHA1计算协议进行度量，并通过GUID在BMC中获取到相应的基准值，
-这些功能都通过BmcCheck函数实现。
-\par GUID匹配具体通过编写的CompareGuid函数比较128位的GUID值，通过把128位的GUID数据结构通过强制类型转换
-(CONST UINT64*) Guid转换为UEFI系统中可以直接通过==符号进行比较的UINT64数据类型的指针，指针中包含了两个
-元素，分别是GUID的高64位和底64位，然后通过表达式
-(LowPartOfGuid1 == LowPartOfGuid2 \&\& HighPartOfGuid1 == HighPartOfGuid2)来返回比较结果的BOOLEAN
-类型值。
 \par 在驱动度量模块中，另一个重要的功能就是生成度量日志的功能。此功能的目的是向BMC系统发送UEFI启动过程
 中度量UEFI文件系统协议栈的四个驱动和特定硬盘ESP分区文件时，将度量过程中产生的hash值和BMC中取出的基准值，
 以及度量结果通过日志写入的方式，存储于BMC系统固件中。由于此功能不需要UEFI系统和BMC系统尽心数据互送，只
@@ -313,8 +302,7 @@ EFI\_IMAGE\_SUBSYSTEM\_EFI\_RUNTIME\_DRIVER类型，因此可以通过这个条�
 \end{figure}
 
 如图4-4所示，描述的是度量日志写入功能中向串口写入信息的函数。其中输入的日志信息是使用系统调用AsciiVSPrint函数
-后，通过DEBUG信息生成的ASCII码格式的字符串，用8位的无符号整数的指针表示，其中每8位正好对应一个ASCII码，
-表示一个英文字符。PRINTCONFIG结构用来在内存中表示打印信息参数的数据结构，用于记录每次Buffer需要写入的
+后，通过DEBUG信息生成ASCII码格式的字符串。PRINTCONFIG结构用来在内存中表示打印信息参数的数据结构，用于记录每次Buffer需要写入的
 目的地址，其中Start字段是PRINTCONFIG在内存中的起始地址，Index字段用于在每次写入以此Buffer数据后，自加一
 以达到下次调用串口写入函数时，写入到上次数据内容的后面。IO映射地址的位置是
 在系统DXE阶段初始化过程中确定的。值得注意的是，
@@ -664,4 +652,4 @@ FileSysStack.dxs，从而将dxs文件添加进驱动文件的编译过程。
 以及SEC阶段、PEI阶段的详细设计思路，最后是DXE阶段依赖表达式的利用方法，以确保DXE调度程序按照安全方案
 的预期顺序按序调度加载DXE驱动程序。
 
-\bjutclearpage
+%\bjutclearpage

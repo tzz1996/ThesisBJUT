@@ -19,7 +19,7 @@ UEFI的平台架构
 如图 2-1 所示：
 
 \begin{figure}[htb]
-    \label{infrastructure_of_uefi}
+    %\label{infrastructure_of_uefi}
     % 调整图片与上文的垂直距离 %
     \vspace{0cm}
     % 调整图片图片与中文标题、中文标题与英文标题距离 % 
@@ -48,7 +48,7 @@ UEFI Image包含三种：UEFI应用程序、UEFI驱动和OS Loaders，这些实�
 自己的生命周期，从下图就可以看出启动时服务在UEFI启动过程中的位置\cite{chinese20}。
 
 \begin{figure}[htb]
-    \label{bootint_sequence}
+    %\label{bootint_sequence}
     % 调整图片与上文的垂直距离 %
     \vspace{0cm}   
     % 调整图片图片与中文标题、中文标题与英文标题距离 %                             
@@ -87,7 +87,7 @@ UEFI中协议设计的思想为，由于UEFI的官方提供实现的版本为C�
 协议的加载、保存和调用等操作。其中UEFI启动时服务提供的协议相关的功能函数如表2-1所示。
 
 \begin{table}[htb]
-    \label{tab:parametervalues}
+    %\label{tab:parametervalues}
     % 设置表内行间距 %
     \renewcommand\arraystretch{1.5}
     % 设置表题目 %
@@ -153,7 +153,7 @@ leProtocolInterfaces这样的加载协议函数，在众多UEFI应用以及底�
 来说，它可以安全地卸载并重新安装由UEFI驱动程序使用的协议接口。
 
 \begin{figure}[htb]
-    \label{bootint_sequence}
+    %\label{bootint_sequence}
     % 调整图片与上文的垂直距离 %
     \vspace{0cm}   
     % 调整图片图片与中文标题、中文标题与英文标题距离 %                             
@@ -183,7 +183,7 @@ UEFI固件文件系统指的是BIOS闪存芯片中的数据存储格式，它通
 内容和UEFI启动阶段内存中文件的内容\cite{chinese21}。具体的固件中UEFI可执行程序文件存储格式如图2-4所示。
 
 \begin{figure}[htb]
-    \label{ffs_format}
+    %\label{ffs_format}
     % 调整图片与上文的垂直距离 %
     \vspace{0cm}   
     % 调整图片图片与中文标题、中文标题与英文标题距离 %                             
@@ -230,7 +230,7 @@ UEFI BIOS和传统BIOS都支持硬盘的读写功能。UEFI优于传统BIOS的�
 开源库中。UEFI文件系统协议栈图如图2-5所示。
 
 \begin{figure}[htb]
-    \label{ffs_format}
+    %\label{ffs_format}
     % 调整图片与上文的垂直距离 %
     \vspace{0cm}   
     % 调整图片图片与中文标题、中文标题与英文标题距离 %                             
@@ -282,7 +282,7 @@ LBA(Logical Block Addressing)逻辑块寻址模式将CHS这种三维寻址方式
 位置。关于GPT分区表的详细分析及恶意篡改方式将在第三章中介绍。
 
 \begin{figure}[htb]
-    \label{ffs_format}
+    %\label{ffs_format}
     % 调整图片与上文的垂直距离 %
     \vspace{0cm}   
     % 调整图片图片与中文标题、中文标题与英文标题距离 %
@@ -318,7 +318,7 @@ IPMI协议作为BMC与服务器其他硬件设备通信的桥梁主要有两种�
 进行一些度量过程中基准值的存储功能，因此使用KCS接口来进行通讯设计，以避免不必要的传输资源浪费。
 
 \begin{figure}[htb]
-    \label{ffs_format}
+    %\label{ffs_format}
     % 调整图片与上文的垂直距离 %
     \vspace{0cm}   
     % 调整图片图片与中文标题、中文标题与英文标题距离 %
@@ -346,5 +346,14 @@ IPMI协议作为BMC与服务器其他硬件设备通信的桥梁主要有两种�
 %\subsection{可信计算信任链}
 
 %\subsection{可信平台模块}
+
+%
+% 2.5节
+%
+\section{本章小结}
+本章首先介绍了UEFI规范中的整体系统设计结构，并着重介绍了UEFI的协议运作方式和对本文有重要作用的启动时服务
+提供的具体功能函数。然后对固件文件系统中驱动数据的存放方式进行了描述，为后面的驱动内容读取功能提供了理论基础；
+分析了UEFI文件系统协议栈在系统中的作用和具体到主要的四个驱动程序名称。最后对UEFI BIOS中与BMC系统的通信方式
+进行了分析，选用了IPMI的KCS访问模式，来完成数据的交互。
 
 \bjutclearpage

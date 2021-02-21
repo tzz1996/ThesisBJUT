@@ -134,9 +134,65 @@ edksetup程序的初始化工作，这个程序的目的在于为正在打开着
 %
 % 5.2节
 %
-\section{驱动度量功能验证}
+\section{驱动度量功能实现与测试}
 本文中在DXE阶段加载的可信度量驱动程序，主要用来度量四个UEFI文件系统协议栈驱动程序，并向BMC发送度量日志。
-基于以上功能对可信度量驱动程序进行测试。
+基于以上功能对可信度量驱动程序进行功能开发与测试。
+
+\subsection{功能实现}
+驱动度量函数首先根据传进来的内存中的驱动数据结构表示，判别驱动类型，由于四个文件系统协议栈驱动都属于
+EFI\_IMAGE\_SUBSYSTEM\_EFI\_RUNTIME\_DRIVER类型，因此可以通过这个条件进行初步判断。在确定驱动类型正确
+之后，进行GUID的判别，其中的四个特定驱动程序GUID通过INF文件获取的方式写死在代码中。若确定此正在加载的驱动
+是四个驱动之一，则通过可信度量值计算模块中的SHA1计算协议进行度量，并通过GUID在BMC中获取到相应的基准值，
+这些功能都通过BmcCheck函数实现。
+
+\begin{lstlisting}
+    EFI_STATUS
+    DriverMeasurement(
+        IN LOADED_IMAGE_PRIVATE_DATA   *Image
+    ) {
+        switch (Image->ImageContext.ImageType) {
+        ...
+        case EFI_IMAGE_SUBSYSTEM_EFI_RUNTIME_DRIVER:
+            if (CompareGuid(Image->ImageContext->Name, DiskIoDxeName) ||
+                CompareGuid(Image->ImageContext->Name, PartitionDxeName) ||
+                CompareGuid(Image->ImageContext->Name, AtaAtapiPassThruDxeName) ||
+                CompareGuid(Image->ImageContext->Name, FatFileSysName))
+                    BmcCheck(Image->ImageContext);
+        ...
+    }
+\end{lstlisting}
+\par GUID匹配具体通过编写的CompareGuid函数比较128位的GUID值，通过把128位的GUID数据结构通过强制类型转换
+(CONST UINT64*) Guid转换为UEFI系统中可以直接通过==符号进行比较的UINT64数据类型的指针，指针中包含了两个
+元素，分别是GUID的高64位和底64位，然后通过表达式
+(LowPartOfGuid1 == LowPartOfGuid2 \&\& HighPartOfGuid1 == HighPartOfGuid2)来返回比较结果的BOOLEAN
+类型值。
+\begin{lstlisting}
+UINTN
+EFIAPI
+SerialPortWrite (
+    IN UINT8     *Buffer,
+    IN UINT32     Size
+    )
+{
+    PRINTCONFIG* Pconfig;
+    UINT8 cpuid;
+    cpuid = hard_smp_processor_id ();
+    cpuid = cpuid & (CORENUM_PER_CG - 1);
+    Pconfig = PRINTK_BUF_CONFIG;
+    Pconfig += cpuid;
+    ...
+    CopyMem (Pconfig->Start + Pconfig->Index, Buffer, Size);
+    Pconfig->Index += Size;
+    ...
+}
+\end{lstlisting}
+上述代码描述的是度量日志写入功能中向串口写入信息的函数。其中输入参数Buffer是使用系统调用AsciiVSPrint函数
+后，通过DEBUG信息生成的ASCII码格式的字符串，用8位的无符号整数的指针表示，其中每8位正好对应一个ASCII码，
+表示一个英文字符。PRINTCONFIG是一个用来在内存中表示打印信息参数的数据结构，用于记录每次Buffer需要写入的
+目的地址，其中Start字段是PRINTCONFIG在内存中的起始地址，Index字段用于在每次写入以此Buffer数据后，自加一
+以达到下次调用串口写入函数时，写入到上次数据内容的后面。PRINTCONFIG的地址是通过计算得到的，PRINTK\_BUF\_CONFIG
+是一个系统写死的数值，内容为0xfffffc0000870000UL，用于记录PRINTCONFIG结构在IO映射地址的位置，此内容是
+在系统DXE阶段初始化过程中确定的。
 
 \subsection{测试目的}
 该可信度量功能对DXE阶段特定驱动的度量方法存在普遍性，给出了根据现有UEFI驱动加载的设计理念，自定义度量驱动
@@ -195,7 +251,49 @@ Maintance维护工具。通过lazyrrk 30 0命令获取BMC日志信息，其中�
 %
 % 5.3节
 %
-\section{BMC驱动连通性验证}
+\section{BMC驱动连通性实现与测试}
+\subsection{功能实现}
+\begin{lstlisting}
+EFI_STATUS
+EFIAPI
+IpmiSendCommand (
+    IN  EFI_IPMI_INTERFACE_PROTOCOL    *This,
+    IN  UINT8                          Command,
+    IN  UINT8                          *CommandData,
+    IN  UINT8                          CommandDataSize
+) {
+    ...
+    Status = KcsWaitforIbfClear(Instance);
+    WriteKcsCommand(Instance,KCS_WRITE_START);
+    Status = KcsCheckStatus(Instance,&KcsStatus);
+    if(KcsStatus.Bits.State !=KcsWriteState){
+    return KcsErrorExit(Instance);
+    }
+    KcsClearObf(Instance);
+    for(i=0; i<DataSize-1; i++) {
+        WriteKcsData(Instance,Data[i]);
+        Status = KcsCheckStatus(Instance,&KcsStatus);
+        if(EFI_ERROR(Status)) {
+            return EFI_DEVICE_ERROR;
+        }
+        if(KcsStatus.Bits.State !=KcsWriteState){
+            return KcsErrorExit(Instance);
+        }
+        KcsClearObf(Instance);
+    }
+    WriteKcsCommand(Instance,KCS_WRITE_END);
+    Status = KcsCheckStatus(Instance,&KcsStatus);
+    if(KcsStatus.Bits.State !=KcsWriteState){
+        return KcsErrorExit(Instance);
+    }
+    KcsClearObf(Instance);
+    WriteKcsCommand(Instance,Data[i]);
+    ...
+}
+\end{lstlisting}
+如上代码所示，通过解析发送命令函数来说明与BMC系统的通信方式。发送函数接收主要的8位标识的命令信息，和命令
+数据大小，然后根据IPMI协议提供的KCS数据发送状态流，依次设置KCS命令和查询相关寄存器，配合数据接收寄存器的
+数据写入过程\cite{english22}。实现的具体流程参照图4-5。
 
 \subsection{测试目的}
 在可信度量驱动程序的开发过程中，需要一个从BMC系统取出基准值的过程，通过单独测试UEFI BIOS中BMC驱动程序
@@ -221,7 +319,7 @@ SHELL程序依然可以访问到UEFI初始化的一切系统资源，为驱动�
     \setlength{\abovecaptionskip}{0.3cm}
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=12cm]{bmc_kcs.png}
+    \includegraphics[width=11cm]{bmc_kcs.png}
     % 中文标题 %
     \caption*{图 5-7 BMC命令运行结果}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
