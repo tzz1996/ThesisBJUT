@@ -84,8 +84,7 @@ typedef struct SHAstate_st {
 \end{figure}
 
 如图4-1所示，符合PI规范的FV固件卷文件包含主要两部分，其中一部分是如图所示的firmware volume header
-固件卷头部，另一部分是firmware volume data固件卷数据部分。其中固件卷头部用于描述此FV文件的所有属性信息
-\cite{extra2}，
+固件卷头部，另一部分是firmware volume data固件卷数据部分。其中固件卷头部用于描述此FV文件的所有属性信息，
 同时也包含了一个用来标识组织固件中数据存储格式的固件文件系统的UEFI全局标识符GUID。固件卷头部不仅可以支持
 UEFI特定的FFS固件文件系统，还支持一切符合PI规范的固件文件系统。
 \par 当UEFI系统加载FV中的文件信息时，首先识别固件卷头部，并用名为EFI\_FIRMWARE\_VOLUME\_HEADER的
@@ -278,7 +277,7 @@ EFI\_SIMPLE\_FILE\_SYSTEM\_PROTOCOL文件系统协议，将其安装在提供的
 在确定了GUID后，就需要在度量功能的代码中进行GUID的匹配，再进行驱动数据内容的度量。需要说明的是，在四个
 驱动程序中，由于UEFI使用的GPT分区格式和各个硬件设计为统一格式，因此PartitionDxe和DiskIoDxe驱动在各个
 真机平台上是统一的；而PassThruDxe和FileSys驱动需要根据不同的物理平台确定不同的驱动和特定GUID。这里采用
-的是申威6A型号服务器的具体驱动名称和GUID信息\cite{chinese7}。
+的是申威6A型号服务器的具体驱动名称和GUID信息\cite{chinese7,addition2}。
 \par 在驱动度量模块中，另一个重要的功能就是生成度量日志的功能。此功能的目的是向BMC系统发送UEFI启动过程
 中度量UEFI文件系统协议栈的四个驱动和特定硬盘ESP分区文件时，将度量过程中产生的hash值和BMC中取出的基准值，
 以及度量结果通过日志写入的方式，存储于BMC系统固件中。由于此功能不需要UEFI系统和BMC系统尽心数据互送，只
@@ -327,7 +326,7 @@ struct _EFI_IPMI_INTERFACE_PROTOCOL {
 如上面的代码清单所描述，DXE阶段的BMC通信模块定义了一个名为EFI\_IPMI\_INTERFACE\_PROTOCOL的IPMI通信协议
 结构体，其中包含了三个主要的函数指针。SendCommand函数用于通过UEFI系统向BMC系统发送IPMI格式的命令代码，
 ReceivePacket函数用于在UEFI系统中读取BMC系统写入特定硬件缓存并通过UEFI的IO端口映射到内存中的地址，
-GetStatus函数则用于读取特定的BMC寄存器，并按位解析BMC状态信息。
+GetStatus函数则用于读取特定的BMC寄存器，并按位解析BMC状态信息\cite{addition7}。
 \par BMC通信模块以DxeInitlizeIpmiKcs作为入口函数，加载对应的IPMI协议中三个主要功能函数到Protocol数据
 结构中，并通过gBS->InstallMultipleProtocolInterfaces，Boot Service中的安装协议函数通过
 gEfiIpmiInterfaceProtocolGuid协议的全局标识信息，安装于EFI\_IPMI\_INSTANCE结构的Handle字段中。
@@ -395,7 +394,7 @@ gEfiIpmiInterfaceProtocolGuid协议的全局标识信息，安装于EFI\_IPMI\_I
     \vspace{-0.3cm}
 \end{table}
 
-如表4-2所示，其中7：6也就是bit7和bit6形成一个四种情况的状态组合，有限状态机组合情况如下\cite{chineses34}：
+如表4-2所示，其中7：6也就是bit7和bit6形成一个四种情况的状态组合，有限状态机组合情况如下：
 \par 00：IDLE\_STATE，表示KCS接口是空闲的，外部系统不应预期收到或向其发送任何数据。
 \par 01：READ\_STATE，读状态表示BMC正在向外部系统传输一个一字节大小的数据包，此时外部系统也应处于对应的
 读取信息状态。
@@ -491,7 +490,7 @@ SHA1算法，集成在SEC core的代码中，以此来完成阶段度量的任�
 EFI\_FV\_FILE\_INFO结构体中，因此可以通过EFI\_FV\_FILE\_INFO中的EFI\_GUID字段，来判断此PEIM是否为PEI
 阶段的可信度量模块，若是，则通过EFI\_PEI\_SERVICES中的PeiMemoryInstalled布尔类型的变量来确定此次调度器
 的调用是否在永久内存中，若是，再进行此可信度量模块的加载，否则跳过。由于PEI core和DXE core不是平台相关的，
-因此大部分平台都会调用相同的EDKII\cite{extra4}实现的PEI和DXE核心程序和调度程序，此处提到的变量名称与EDKII开源项目中的名称
+因此大部分平台都会调用相同的EDKII实现的PEI和DXE核心程序和调度程序，此处提到的变量名称与EDKII开源项目中的名称
 统一。
 
 \subsection{DXE阶段设计}
@@ -649,7 +648,6 @@ FileSysStack.dxs，从而将dxs文件添加进驱动文件的编译过程。
 本章节介绍了此安全方案的各个模块的详细设计即关键数据结构和协议的代码实现，其主要包括DXE和BDS阶段
 起作用的可信度量驱动，也包括其中的驱动文件度量模块、硬盘文件度量模块、hash算法模块和BMC通信模块，也有
 负责缓存硬盘文件和FV中驱动文件的中间层模块。然后介绍了PEI和DXE阶段分成两个可信度量驱动实现的理由，
-以及SEC阶段、PEI阶段的详细设计思路，最后是DXE阶段依赖表达式的利用方法，以确保DXE调度程序按照安全方案
-的预期顺序按序调度加载DXE驱动程序。
+以及SEC阶段、PEI阶段的详细设计思路，最后是DXE阶段依赖表达式的利用方法，以确保安全方案的实施。
 
-%\bjutclearpage
+\bjutclearpage

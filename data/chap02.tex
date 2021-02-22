@@ -45,7 +45,7 @@ UEFI Image包含三种：UEFI应用程序、UEFI驱动和OS Loaders，这些实�
 实现的。
 \par 从图中可以看出，UEFI的启动时服务Boot Service中包含了UEFI在PEI和DXE两个主要加载驱动完成
 系统初始化过程中所需要的驱动程序、内存管理、设备管理、协议贮存等信息。而UEFI的启动时服务也有他
-自己的生命周期，从下图就可以看出启动时服务在UEFI启动过程中的位置\cite{chinese20}。
+自己的生命周期，从下图就可以看出启动时服务在UEFI启动过程中的位置。
 
 \begin{figure}[htb]
     %\label{bootint_sequence}
@@ -57,7 +57,7 @@ UEFI Image包含三种：UEFI应用程序、UEFI驱动和OS Loaders，这些实�
 	\centering
     \includegraphics[width=10cm]{boot_seq.png}
     % 中文标题 %
-    \caption*{图 2-2 UEFI启动流程图}
+    \caption*{图 2-2 统一可扩展固件接口启动流程图}
     % 调整图片英文标题与下文距离 %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
@@ -162,7 +162,7 @@ leProtocolInterfaces这样的加载协议函数，在众多UEFI应用以及底�
 	\centering
     \includegraphics[width=10cm]{locate_protocol.png}
     % 中文标题 %
-    \caption*{图 2-3 UEFI协议加载方式图}
+    \caption*{图 2-3 统一可扩展固件接口协议加载方式图}
     % 调整图片英文标题与下文距离 %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
@@ -239,7 +239,7 @@ UEFI BIOS和传统BIOS都支持硬盘的读写功能。UEFI优于传统BIOS的�
 	\centering
     \includegraphics[width=10cm]{filesystem_protocol_stack.png}
     % 中文标题 %
-    \caption*{图 2-5 UEFI文件系统协议栈}
+    \caption*{图 2-5 统一可扩展固件接口文件系统协议栈}
     % 调整图片英文标题与下文距离 %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
@@ -291,7 +291,7 @@ LBA(Logical Block Addressing)逻辑块寻址模式将CHS这种三维寻址方式
 	\centering
     \includegraphics[width=10cm]{partition.png}
     % 中文标题 %
-    \caption*{图 2-6 硬盘GPT分区表示意图}
+    \caption*{图 2-6 硬盘全局分区表示意图}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
@@ -308,7 +308,7 @@ FileSysDxe驱动则负责为UEFI提供与硬盘硬件相同的文件系统数据
 BMC(Baseboard Management Controller)基板管理控制器是一种用于实时检测服务器硬件信息并具备独立运算能力的
 计算机系统中的组件，它通过IPMI协议与服务器中的其他硬件设备进行通信。在基于IPMI协议的管理平
 台中，系统对平台各个硬件设备的信息管理策略，都是通过与BMC通信并统计运算而实现
-的。BMC拥有除了独立处理器外的独立固件闪存、系统电源、网卡设备，是一个具有独立性的基于服务器平台的管理
+的\cite{addition5,addition6}。BMC拥有除了独立处理器外的独立固件闪存、系统电源、网卡设备，是一个具有独立性的基于服务器平台的管理
 子系统。在如今的服务器国产化过程中，BMC越来越得到各个厂商的广泛使用。
 
 \subsection{BMC与BIOS通讯方式}
