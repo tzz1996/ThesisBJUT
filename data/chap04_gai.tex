@@ -118,31 +118,34 @@ UEFI规范所规定的固件文件系统section分类及信息如表4-1。
 
 \begin{table}[htb]
     % 设置表内行间距 %
-    \renewcommand\arraystretch{1.5}
+    \renewcommand\arraystretch{1.0}
     % 设置表题目 %
 	\caption*{表 4-1 固件文件系统分段信息}
 	\caption*{Table 4-1 The Firmware File System Section Imformation}
-    \begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}ccl@{}}
+    % @{\hspace{0pt}}用来表示表中每列的间隔 %
+    % 以下这种方式为不带@{\extracolsep{\fill}}整行填充效果的例子
+    % \begin{tabular*}{\hsize}{@{\hspace{0pt}}ccl@{\hspace{0pt}}}
+    \begin{tabular*}{\hsize}{@{\hspace{20pt}}@{\extracolsep{\fill}}ccl@{\hspace{20pt}}}
     % 表上线和表头 %
 	\toprule[0.75pt]
-    名称  &数值  &\makecell[c]{描述}\\
+    \xiaowu 名称  &\xiaowu 数值  &\makecell[c]{\xiaowu 描述}\\
     % 表中线和表内容 %
 	\midrule[0.5pt]
-	EFI\_SECTION\_COMPRESSION     &0x01  &\quad 封装了其他被压缩的分段\\
-    EFI\_SECTION\_GUID\_DEFINED   &0x02  &\makecell[l]{
-                                          \quad 封装部分，其中其他部分的格式由GUID\\
-                                                定义\\
-                                        }\\
-    EFI\_SECTION\_DISPOSABLE      &0x03  &\makecell[l]{
-                                          \quad 在构建过程中使用的封装部分，但执行时\\
-                                                不需要\\
-                                        }\\
-    EFI\_SECTION\_PE32            &0x10  &\quad PE32格式信息和可执行映像\\
-    EFI\_SECTION\_PIC             &0x11  &\quad 位置无关的代码段\\
-    EFI\_SECTION\_DXE\_DEPEX      &0x13  &\quad DXE阶段依赖表达式\\
-    EFI\_SECTION\_VERSION         &0x14  &\quad 版本号，文字和数字信息\\
-    EFI\_SECTION\_RAW             &0x19  &\quad raw数据信息\\
-    EFI\_SECTION\_PEI\_DEPEX      &0x1b  &\quad PEI阶段依赖表达式\\
+	\xiaowu EFI\_SECTION\_COMPRESSION     &\xiaowu 0x01  &\quad \xiaowu 封装了其他被压缩的分段\\
+    \xiaowu EFI\_SECTION\_GUID\_DEFINED   &\xiaowu 0x02  &\makecell[l]{
+                                                            \quad \xiaowu 封装部分，其中其他部分的格式由GUID\\
+                                                            \xiaowu 定义\\
+                                                            }\\
+    \xiaowu EFI\_SECTION\_DISPOSABLE      &\xiaowu 0x03  &\makecell[l]{
+                                                            \quad \xiaowu 在构建过程中使用的封装部分，但执行时\\
+                                                            \xiaowu 不需要\\
+                                                            }\\
+    \xiaowu EFI\_SECTION\_PE32            &\xiaowu 0x10  &\quad \xiaowu PE32格式信息和可执行映像\\
+    \xiaowu EFI\_SECTION\_PIC             &\xiaowu 0x11  &\quad \xiaowu 位置无关的代码段\\
+    \xiaowu EFI\_SECTION\_DXE\_DEPEX      &\xiaowu 0x13  &\quad \xiaowu DXE阶段依赖表达式\\
+    \xiaowu EFI\_SECTION\_VERSION         &\xiaowu 0x14  &\quad \xiaowu 版本号，文字和数字信息\\
+    \xiaowu EFI\_SECTION\_RAW             &\xiaowu 0x19  &\quad \xiaowu raw数据信息\\
+    \xiaowu EFI\_SECTION\_PEI\_DEPEX      &\xiaowu 0x1b  &\quad \xiaowu PEI阶段依赖表达式\\
     % 表下线 %
 	\bottomrule[0.75pt]
     \end{tabular*}
@@ -368,25 +371,28 @@ gEfiIpmiInterfaceProtocolGuid协议的全局标识信息，安装于EFI\_IPMI\_I
 
 \begin{table}[htb]
     % 设置表内行间距 %
-    \renewcommand\arraystretch{1.3}
+    \renewcommand\arraystretch{1.0}
     % 设置表题目 %
 	\caption*{表 4-2 BMC状态寄存器标志位说明}
 	\caption*{Table 4-2 KCS Interface Status Register Bits}
-    \begin{tabular*}{\hsize}{@{\hspace{20pt}}@{\extracolsep{\fill}}ccl@{}}
+    % @{\hspace{0pt}}用来表示表中每列的间隔 %
+    % 以下这种方式为不带@{\extracolsep{\fill}}整行填充效果的例子
+    % \begin{tabular*}{\hsize}{@{\hspace{0pt}}ccl@{\hspace{0pt}}}
+    \begin{tabular*}{\hsize}{@{\hspace{20pt}}@{\extracolsep{\fill}}ccl@{\hspace{20pt}}}
     % 表上线和表头 %
 	\toprule[0.75pt]
-    比特位  &名称  &\makecell[c]{描述}\\
+    \xiaowu 比特位  &\xiaowu 名称  &\makecell[c]{\xiaowu 描述}\\
     % 表中线和表内容 %
     \midrule[0.5pt]
-    0                             &OBF       &\quad 输出数据有效标志位\\
-    1                             &IBF       &\quad 输入数据有效标志位\\
-    2                             &SMS\_ATN  &\quad 表明BMC有事务需要软件系统处理\\
-    3                             &C\_D\_n   &\makecell[l]{
-                                              \quad 表明最后写入的是Command\_R还是\\
-                                                    Data\_In\_R，“1”表示 Command\_R\\
-                                            }\\
-    5：4                          &OEM       &\quad 保留标志位\\
-    7：6                          &S1:S0     &\quad KCS读写状态机状态\\
+    \xiaowu 0             &\xiaowu OBF       &\quad \xiaowu 输出数据有效标志位\\
+    \xiaowu 1             &\xiaowu IBF       &\quad \xiaowu 输入数据有效标志位\\
+    \xiaowu 2             &\xiaowu SMS\_ATN  &\quad \xiaowu 表明BMC有事务需要软件系统处理\\
+    \xiaowu 3             &\xiaowu C\_D\_n   &\makecell[l]{
+                                                \quad \xiaowu 表明最后写入的是Command\_R还是\\
+                                                \xiaowu Data\_In\_R，“1”表示 Command\_R\\
+                                                }\\
+    \xiaowu 5：4          &\xiaowu OEM       &\quad \xiaowu 保留标志位\\
+    \xiaowu 7：6          &\xiaowu S1:S0     &\quad \xiaowu KCS读写状态机状态\\
     % 表下线 %
 	\bottomrule[0.75pt]
     \end{tabular*}
@@ -562,34 +568,36 @@ BDS core通过BDS架构协议定位和加载在启动准备服务环境中执行
 
 \begin{table}[H]
     % 设置表内行间距 %
-    \renewcommand\arraystretch{1.3}
+    \renewcommand\arraystretch{1.0}
     % 设置表题目 %
 	\caption*{表 4-3 依赖表达式命令摘要}
 	\caption*{Table 4-3 Dependency Expression Opcode Summary}
     % @{\hspace{0pt}}用来表示表中每列的间隔 %
-    \begin{tabular*}{\hsize}{@{\hspace{0pt}}ccl@{\hspace{0pt}}}
+    % 以下这种方式为不带@{\extracolsep{\fill}}整行填充效果的例子
+    % \begin{tabular*}{\hsize}{@{\hspace{0pt}}ccl@{\hspace{0pt}}}
+    \begin{tabular*}{\hsize}{@{\hspace{20pt}}@{\extracolsep{\fill}}ccl@{\hspace{20pt}}}
     % 表上线和表头 %
 	\toprule[0.75pt]
-    执行代码  &命令  &\makecell[c]{描述}\\
+    \xiaowu 执行代码  &\xiaowu 命令  &\makecell[c]{\xiaowu 描述}\\
     % 表中线和表内容 %
 	\midrule[0.5pt]
-    0x00    &BEFORE <File Name GUID>  &\quad 在提供的GUID表示的驱动前加载此驱动\\
-    0x01    &AFTER <File Name GUID>   &\quad 在提供的GUID表示的驱动后加载此驱动\\
-    0x02    &PUSH <Protocol GUID>     &\makecell[l]{
-                                       \quad 向栈中添加一个布尔类型的变量，如果这\\
-                                             个GUID表示的协议在句柄数据库中，则添\\
-                                             加TRUE，否则添加FALSE\\
-                                        }\\
-    0x03    &AND                      &\quad 与运算，用于判断栈中判断结果\\
-    0x04    &OR                       &\quad 或运算，用于判断栈中判断结果\\
-    0x05    &NOT                      &\makecell[l]{
-                                       \quad 出栈一个布尔值，通过非运算计算后，将\\
-                                             结果添加进栈\\
-                                        }\\
-    0x06    &TRUE                     &\quad 表示总判断结果为真\\
-    0x07    &FALSE                    &\quad 表示总判断结果为假\\
-    0x08    &END                      &\quad 依赖表达式的结束标志符\\
-    0x09    &SOR                      &\quad 表示驱动还未加载，等同于NOP效果\\
+    \xiaowu 0x00    &\xiaowu BEFORE <File Name GUID>  &\quad \xiaowu 在提供的GUID表示的驱动前加载此驱动\\
+    \xiaowu 0x01    &\xiaowu AFTER <File Name GUID>   &\quad \xiaowu 在提供的GUID表示的驱动后加载此驱动\\
+    \xiaowu 0x02    &\xiaowu PUSH <Protocol GUID>     &\makecell[l]{
+                                                        \quad \xiaowu 向栈中添加一个布尔类型的变量，如果这\\
+                                                        \xiaowu 个GUID表示的协议在句柄数据库中，则添\\
+                                                        \xiaowu 加TRUE，否则添加FALSE\\
+                                                            }\\
+    \xiaowu 0x03    &\xiaowu AND                      &\quad \xiaowu 与运算，用于判断栈中判断结果\\
+    \xiaowu 0x04    &\xiaowu OR                       &\quad \xiaowu 或运算，用于判断栈中判断结果\\
+    \xiaowu 0x05    &\xiaowu NOT                      &\makecell[l]{
+                                                        \quad \xiaowu 出栈一个布尔值，通过非运算计算后，将\\
+                                                        \xiaowu 结果添加进栈\\
+                                                            }\\
+    \xiaowu 0x06    &\xiaowu TRUE                     &\quad \xiaowu 表示总判断结果为真\\
+    \xiaowu 0x07    &\xiaowu FALSE                    &\quad \xiaowu 表示总判断结果为假\\
+    \xiaowu 0x08    &\xiaowu END                      &\quad \xiaowu 依赖表达式的结束标志符\\
+    \xiaowu 0x09    &\xiaowu SOR                      &\quad \xiaowu 表示驱动还未加载，等同于NOP效果\\
     % 表下线 %
 	\bottomrule[0.75pt]
     \end{tabular*}

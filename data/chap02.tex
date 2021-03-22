@@ -89,56 +89,59 @@ UEFI中协议设计的思想为，由于UEFI的官方提供实现的版本为C�
 \begin{table}[htb]
     %\label{tab:parametervalues}
     % 设置表内行间距 %
-    \renewcommand\arraystretch{1.5}
+    \renewcommand\arraystretch{1.0}
     % 设置表题目 %
 	\caption*{表 2-1 启动时服务协议功能表}
 	\caption*{Table 2-1 Boot Service Protocol Interface Functions}
-    \begin{tabular*}{\hsize}{@{}@{\extracolsep{\fill}}ccl@{}}
+    % @{\hspace{0pt}}用来表示表中每列的间隔 %
+    % 以下这种方式为不带@{\extracolsep{\fill}}整行填充效果的例子
+    % \begin{tabular*}{\hsize}{@{\hspace{0pt}}ccl@{\hspace{0pt}}}
+    \begin{tabular*}{\hsize}{@{\hspace{20pt}}@{\extracolsep{\fill}}ccl@{\hspace{20pt}}}
     % 表上线和表头 %
 	\toprule[0.75pt]
-    名称  &类型  &\makecell[c]{描述}\\
+    \xiaowu 名称  &\xiaowu 类型  &\makecell[c]{\xiaowu 描述}\\
     % 表中线和表内容 %
 	\midrule[0.5pt]
-	InstallProtocolInterface   &Boot  &\quad 在设备句柄上安装一个协议接口\\
-    UninstallProtocolInterface &Boot  &\quad 从设备句柄上移除一个协议接口\\
-    ReinstallProtocolInterface &Boot  &\quad 在设备句柄上重新安装协议接口\\
-    RegisterProtocolNotify     &Boot  &\makecell[l]{ 
-                                       \quad 注册一个事件，只要接口有信号为指定的\\
-                                             协议安装\\
-                                        }\\
-    LocateHandle               &Boot  &\quad 返回支持指定协议的句柄数组\\
-    HandleProtocol             &Boot  &\quad 查询句柄以确定它是否支持指定的协议\\
-    LocateDevicePath           &Boot  &\makecell[l]{
-                                       \quad 找到支持指定路径的设备路径上的所有设\\
-                                             备协议并将句柄返回到最接近的设备路径
-                                        }\\
-    OpenProtocol               &Boot  &\quad 将元素添加到使用协议的代理列表中接口\\
-    CloseProtocol              &Boot  &\makecell[l]{
-                                       \quad 从代理列表中移除一个元素，也就是消耗\\
-                                             一个协议接口
-                                        }\\
-    OpenProtocolInformation    &Boot  &\quad 检索当前正在使用的代理列表协议接口\\
-    ConnectController          &Boot  &\makecell[l]{
-                                       \quad 使用一组优先规则来找到最佳的驱动程序\\
-                                             集管理一个控制器
-                                        }\\
-    DisconnectController       &Boot  &\quad 通知一组驱动程序以停止管理控制器\\
-    ProtocolsPerHandle         &Boot  &\makecell[l]{
-                                       \quad 检索安装在句柄上的协议列表，函数返回\\
-                                             的缓冲区是自动分配的
-                                        }\\
-    LocateHandleBuffer         &Boot  &\makecell[l]{
-                                       \quad 从句柄数据库中检索句柄列表，该列表符\\
-                                             合搜索条件，返回缓冲区自动已分配
-                                        }\\
-    LocateProtocol             &Boot  &\makecell[l]{
-                                       \quad 在句柄数据库中找到第一个支持所需协议\\
-                                             的句柄\\
-                                        }\\
-    InstallMultipleProtocolInterfaces
-                               &Boot  &\quad 将一个或多个协议接口安装到指定句柄上\\
-    UninstallMultipleProtocolInterfaces
-                               &Boot  &\quad 从指定句柄中卸载一个或多个协议接口\\
+    \xiaowu InstallProtocolInterface   &\xiaowu Boot  &\quad \xiaowu 在设备句柄上安装一个协议接口\\
+    \xiaowu UninstallProtocolInterface &\xiaowu Boot  &\quad \xiaowu 从设备句柄上移除一个协议接口\\
+    \xiaowu ReinstallProtocolInterface &\xiaowu Boot  &\quad \xiaowu 在设备句柄上重新安装协议接口\\
+    \xiaowu RegisterProtocolNotify     &\xiaowu Boot  &\makecell[l]{ 
+                                                        \quad \xiaowu 注册一个事件，只要接口有信号为指定的\\
+                                                        \xiaowu 协议安装\\
+                                                        }\\
+    \xiaowu LocateHandle               &\xiaowu Boot  &\quad \xiaowu 返回支持指定协议的句柄数组\\
+    \xiaowu HandleProtocol             &\xiaowu Boot  &\quad \xiaowu 查询句柄以确定它是否支持指定的协议\\
+    \xiaowu LocateDevicePath           &\xiaowu Boot  &\makecell[l]{
+                                                        \quad \xiaowu 找到支持指定路径的设备路径上的所有设\\
+                                                        \xiaowu 备协议并将句柄返回到最接近的设备路径
+                                                        }\\
+    \xiaowu OpenProtocol               &\xiaowu Boot  &\quad \xiaowu 将元素添加到使用协议的代理列表中接口\\
+    \xiaowu CloseProtocol              &\xiaowu Boot  &\makecell[l]{
+                                                        \quad \xiaowu 从代理列表中移除一个元素，也就是消耗\\
+                                                        \xiaowu 一个协议接口
+                                                        }\\
+    \xiaowu OpenProtocolInformation    &\xiaowu Boot  &\quad \xiaowu 检索当前正在使用的代理列表协议接口\\
+    \xiaowu ConnectController          &\xiaowu Boot  &\makecell[l]{
+                                                        \quad \xiaowu 使用一组优先规则来找到最佳的驱动程序\\
+                                                        \xiaowu 集管理一个控制器
+                                                        }\\
+    \xiaowu DisconnectController       &\xiaowu Boot  &\quad \xiaowu 通知一组驱动程序以停止管理控制器\\
+    \xiaowu ProtocolsPerHandle         &\xiaowu Boot  &\makecell[l]{
+                                                        \quad \xiaowu 检索安装在句柄上的协议列表，函数返回\\
+                                                        \xiaowu 的缓冲区是自动分配的
+                                                        }\\
+    \xiaowu LocateHandleBuffer         &\xiaowu Boot  &\makecell[l]{
+                                                        \quad \xiaowu 从句柄数据库中检索句柄列表，该列表符\\
+                                                        \xiaowu 合搜索条件，返回缓冲区自动已分配
+                                                        }\\
+    \xiaowu LocateProtocol             &\xiaowu Boot  &\makecell[l]{
+                                                        \quad \xiaowu 在句柄数据库中找到第一个支持所需协议\\
+                                                        \xiaowu 的句柄\\
+                                                        }\\
+    \xiaowu InstallMultipleProtocolInterfaces
+                                       &\xiaowu Boot  &\quad \xiaowu 将一个或多个协议接口安装到指定句柄上\\
+    \xiaowu UninstallMultipleProtocolInterfaces
+                                       &\xiaowu Boot  &\quad \xiaowu 从指定句柄中卸载一个或多个协议接口\\
     % 表下线 %
 	\bottomrule[0.75pt]
     \end{tabular*}
