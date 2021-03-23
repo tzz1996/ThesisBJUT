@@ -26,7 +26,7 @@ BootLoader等文件的过程，以及UEFI环境中识别硬盘分区方式、识
     \setlength{\abovecaptionskip}{0.3cm}  
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=2cm]{disk_init.png}
+    \includegraphics[width=5cm]{disk_init2.png}
     % 中文标题 %
     \caption*{图 3-1 硬盘文件系统建立过程}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
@@ -51,7 +51,7 @@ UEFI BIOS作为一个基础输入输出系统，为操作系统提供基础的�
     \setlength{\abovecaptionskip}{0.3cm}  
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=4cm]{server_start.png}
+    \includegraphics[width=7cm]{server_start2.png}
     % 中文标题 %
     \caption*{图 3-2 服务器启动流程}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
@@ -61,9 +61,7 @@ UEFI BIOS作为一个基础输入输出系统，为操作系统提供基础的�
 \end{figure}
 
 如图3-2所示，服务器上电，随后初始化UEFI BIOS系统，再由UEFI系统通过内部的文件系统协议栈加载硬盘ESP
-分区中的操作系统引导文件，随后控制权交给引导程序并退出UEFI系统初始化流程。本文重点研究的过程是UEFI
-初始化过程，和UEFI加载硬盘ESP分区文件过程。
-如图3-3所示，为UEFI系统的初始化流程。
+分区中的操作系统引导文件，随后控制权交给引导程序并退出UEFI系统初始化流程。
 
 \begin{figure}[htb]
     % 调整图片与上文的垂直距离 %
@@ -72,7 +70,7 @@ UEFI BIOS作为一个基础输入输出系统，为操作系统提供基础的�
     \setlength{\abovecaptionskip}{0.3cm}  
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=12cm]{uefi_boot_process.png}
+    \includegraphics[width=9cm]{uefi_boot_process2.png}
     % 中文标题 %
     \caption*{图 3-3 UEFI启动流程}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
@@ -81,6 +79,7 @@ UEFI BIOS作为一个基础输入输出系统，为操作系统提供基础的�
     \caption*{Figure 3-3 UEFI boot process}
 \end{figure}
 
+本文重点研究的过程是UEFI初始化过程，和UEFI加载硬盘ESP分区文件过程。如图3-3所示，为UEFI系统的初始化流程。
 如图所示，UEFI系统在遵循UEFI标准的SEC安全启动阶段后，进入PEI和DXE两个UEFI初始化阶段关键的驱动程序加载
 过程，在这里完成UEFI系统的内存及内存地址的建立、硬件设备驱动程序的加载、硬件设备存储器I/O端口映射等系统
 关键初始化步骤。随后通过BDS阶段的BDS core核心程序，也就是启动管理器程序，加载位于硬盘ESP分区中的前期
@@ -99,7 +98,7 @@ OS加载器以及操作系统加载器。其中，前期OS加载器用来作为S
     \setlength{\abovecaptionskip}{0.3cm}  
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=6cm]{uefi_loadfile_process.png}
+    \includegraphics[width=8cm]{uefi_loadfile_process2.png}
     % 中文标题 %
     \caption*{图 3-4 UEFI文件加载过程}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
@@ -269,7 +268,7 @@ PEI没有DXE的资源丰富。而PEI阶段的一个主要目的就是以最少�
     \setlength{\abovecaptionskip}{0.3cm}
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=12cm]{pei_core.png}
+    \includegraphics[width=10cm]{pei_core2.png}
     % 中文标题 %
     \caption*{图 3-9 PEI阶段系统结构}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %

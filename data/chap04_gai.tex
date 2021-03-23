@@ -125,10 +125,10 @@ UEFI规范所规定的固件文件系统section分类及信息如表4-1。
     % @{\hspace{0pt}}用来表示表中每列的间隔 %
     % 以下这种方式为不带@{\extracolsep{\fill}}整行填充效果的例子
     % \begin{tabular*}{\hsize}{@{\hspace{0pt}}ccl@{\hspace{0pt}}}
-    \begin{tabular*}{\hsize}{@{\hspace{20pt}}@{\extracolsep{\fill}}ccl@{\hspace{20pt}}}
+    \begin{tabular*}{\hsize}{@{\hspace{20pt}}@{\extracolsep{\fill}}lcl@{\hspace{20pt}}}
     % 表上线和表头 %
 	\toprule[0.75pt]
-    \xiaowu 名称  &\xiaowu 数值  &\makecell[c]{\xiaowu 描述}\\
+    \makecell[c]{\xiaowu 名称}  &\xiaowu 数值  &\makecell[c]{\xiaowu 描述}\\
     % 表中线和表内容 %
 	\midrule[0.5pt]
 	\xiaowu EFI\_SECTION\_COMPRESSION     &\xiaowu 0x01  &\quad \xiaowu 封装了其他被压缩的分段\\
@@ -236,7 +236,7 @@ typedef struct {
     \setlength{\abovecaptionskip}{0.3cm}
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=4cm]{esp_file_load.png}
+    \includegraphics[width=7cm]{esp_file_load2.png}
     % 中文标题 %
     \caption*{图 4-3 加载硬盘文件流程}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
@@ -294,7 +294,7 @@ EFI\_SIMPLE\_FILE\_SYSTEM\_PROTOCOL文件系统协议，将其安装在提供的
     \setlength{\abovecaptionskip}{0.3cm}
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=4cm]{log_write.png}
+    \includegraphics[width=8cm]{log_write2.png}
     % 中文标题 %
     \caption*{图 4-4 日志信息写入流程}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
@@ -346,7 +346,7 @@ gEfiIpmiInterfaceProtocolGuid协议的全局标识信息，安装于EFI\_IPMI\_I
     \setlength{\abovecaptionskip}{0.3cm}
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=14cm]{kcs_write_transfer.png}
+    \includegraphics[width=14cm]{kcs_write_transfer2.png}
     % 中文标题 %
     \caption*{图 4-5 kcs模式数据写入流程}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
@@ -378,10 +378,10 @@ gEfiIpmiInterfaceProtocolGuid协议的全局标识信息，安装于EFI\_IPMI\_I
     % @{\hspace{0pt}}用来表示表中每列的间隔 %
     % 以下这种方式为不带@{\extracolsep{\fill}}整行填充效果的例子
     % \begin{tabular*}{\hsize}{@{\hspace{0pt}}ccl@{\hspace{0pt}}}
-    \begin{tabular*}{\hsize}{@{\hspace{20pt}}@{\extracolsep{\fill}}ccl@{\hspace{20pt}}}
+    \begin{tabular*}{\hsize}{@{\hspace{20pt}}@{\extracolsep{\fill}}lll@{\hspace{20pt}}}
     % 表上线和表头 %
 	\toprule[0.75pt]
-    \xiaowu 比特位  &\xiaowu 名称  &\makecell[c]{\xiaowu 描述}\\
+    \makecell[c]{\xiaowu 比特位}  &\xiaowu 名称  &\makecell[c]{\xiaowu 描述}\\
     % 表中线和表内容 %
     \midrule[0.5pt]
     \xiaowu 0             &\xiaowu OBF       &\quad \xiaowu 输出数据有效标志位\\
@@ -423,7 +423,7 @@ DATA\_OUT中的一字节数据，随后再向DATA\_IN中写入READ，通过外�
     \setlength{\abovecaptionskip}{0.3cm}
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=10.6cm]{kcs_read_transfer.png}
+    \includegraphics[width=10cm]{kcs_read_transfer2.png}
     % 中文标题 %
     \caption*{图 4-6 kcs模式数据读取流程}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
@@ -443,7 +443,7 @@ DATA\_OUT中的一字节数据，随后再向DATA\_IN中写入READ，通过外�
 SHA1算法，集成在SEC core的代码中，以此来完成阶段度量的任务。SEC阶段的BMC日志信息的输出由于不借助IPMI协议，
 因此不需要BMC驱动程序，只需调用上述BMC串口写入函数，即可将日志信息写入BMC芯片中。
 
-\begin{figure}[htb]
+\begin{figure}[H]
     % 调整图片与上文的垂直距离 %
     \vspace{0cm}   
     % 调整图片图片与中文标题、中文标题与英文标题距离 %
@@ -464,6 +464,14 @@ SHA1算法，集成在SEC core的代码中，以此来完成阶段度量的任�
 
 \subsection{PEI阶段设计}
 
+如图4-8所示，为本安全方案设计的PEI阶段流程。UEFI系统进入PEI阶段后，首先根据从SEC阶段传来
+的HOB数据结构初始化PEI系统服务，用于给PEIM的加载过程提供支持；然后通过PEI阶段的调度程序加载
+位于FV固件卷中的PEIM程序，除了cpu、主板和芯片组的PEIM外还包括如提供PPI通信协议的PEIM等内容；
+随后PEI core通过这些最小的功能集合初始化UEFI系统的永久内存；在系统获得永久内存后，PEI core
+再次调用PEIM调度程序，这次的目的是在完整的永久内存中加载这些PEIM，并在永久内存中执行后面流程；
+随后加载FV中的PEI阶段的可信度量模块PEIM，用这个PEIM的功能度量FV中的DXE core代码，并根据度量
+结果继续加载DXE core或是停止UEFI启动流程。
+
 \begin{figure}[htb]
     % 调整图片与上文的垂直距离 %
     \vspace{0cm}   
@@ -479,14 +487,6 @@ SHA1算法，集成在SEC core的代码中，以此来完成阶段度量的任�
     % 英文标题 %
     \caption*{Figure 4-8 Execution process of PEI}
 \end{figure}
-
-如图4-8所示，为本安全方案设计的PEI阶段流程。UEFI系统进入PEI阶段后，首先根据从SEC阶段传来
-的HOB数据结构初始化PEI系统服务，用于给PEIM的加载过程提供支持；然后通过PEI阶段的调度程序加载
-位于FV固件卷中的PEIM程序，除了cpu、主板和芯片组的PEIM外还包括如提供PPI通信协议的PEIM等内容；
-随后PEI core通过这些最小的功能集合初始化UEFI系统的永久内存；在系统获得永久内存后，PEI core
-再次调用PEIM调度程序，这次的目的是在完整的永久内存中加载这些PEIM，并在永久内存中执行后面流程；
-随后加载FV中的PEI阶段的可信度量模块PEIM，用这个PEIM的功能度量FV中的DXE core代码，并根据度量
-结果继续加载DXE core或是停止UEFI启动流程。
 
 \par 由于PEI阶段设计为只度量DXE core核心代码，并且PEI阶段存在着两次驱动加载过程，分别是临时内存的关键PEIM
 加载，这个目的是用最少的系统资源初始化post memory永久内存；永久内存建立后，再次调用PEIM的调度程序，将PEIM
@@ -512,7 +512,7 @@ DXE阶段为本安全方案度量UEFI文件系统协议栈驱动程序的主要�
     \setlength{\abovecaptionskip}{0.3cm}
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=12.3cm]{dxe_process.png}
+    \includegraphics[width=12.3cm]{dxe_process2.png}
     % 中文标题 %
     \caption*{图 4-9 DXE阶段流程图}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
@@ -546,7 +546,7 @@ BDS core通过BDS架构协议定位和加载在启动准备服务环境中执行
     % 中文标题 %
     \caption*{图 4-10 BDS阶段流程图}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
-    \setlength{\belowcaptionskip}{-0.7cm}
+    \setlength{\belowcaptionskip}{-0.3cm}
     % 英文标题 %
     \caption*{Figure 4-10 Execution process of BDS}
 \end{figure}
@@ -575,10 +575,10 @@ BDS core通过BDS架构协议定位和加载在启动准备服务环境中执行
     % @{\hspace{0pt}}用来表示表中每列的间隔 %
     % 以下这种方式为不带@{\extracolsep{\fill}}整行填充效果的例子
     % \begin{tabular*}{\hsize}{@{\hspace{0pt}}ccl@{\hspace{0pt}}}
-    \begin{tabular*}{\hsize}{@{\hspace{20pt}}@{\extracolsep{\fill}}ccl@{\hspace{20pt}}}
+    \begin{tabular*}{\hsize}{@{\hspace{20pt}}@{\extracolsep{\fill}}cll@{\hspace{20pt}}}
     % 表上线和表头 %
 	\toprule[0.75pt]
-    \xiaowu 执行代码  &\xiaowu 命令  &\makecell[c]{\xiaowu 描述}\\
+    \xiaowu 执行代码  &\makecell[c]{\xiaowu 命令}  &\makecell[c]{\xiaowu 描述}\\
     % 表中线和表内容 %
 	\midrule[0.5pt]
     \xiaowu 0x00    &\xiaowu BEFORE <File Name GUID>  &\quad \xiaowu 在提供的GUID表示的驱动前加载此驱动\\
@@ -621,7 +621,7 @@ DXE阶段相同。UEFI系统中，通过INF文件的[Protocols]字段下添加�
     \setlength{\abovecaptionskip}{0.3cm}
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=10cm]{fv_depex.png}
+    \includegraphics[width=11cm]{fv_depex2.png}
     % 中文标题 %
     \caption*{图 4-11 固件卷依赖表达式存储}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %

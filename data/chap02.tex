@@ -1,7 +1,7 @@
 %
 % 第二章
 %
-\chapter{相关知识及技术介绍}
+\chapter{相关技术介绍}
 
 %
 % 2.1节
@@ -55,7 +55,7 @@ UEFI Image包含三种：UEFI应用程序、UEFI驱动和OS Loaders，这些实�
     \setlength{\abovecaptionskip}{0.3cm}  
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=10cm]{boot_seq.png}
+    \includegraphics[width=8cm]{boot_seq2.png}
     % 中文标题 %
     \caption*{图 2-2 统一可扩展固件接口启动流程图}
     % 调整图片英文标题与下文距离 %
@@ -96,7 +96,7 @@ UEFI中协议设计的思想为，由于UEFI的官方提供实现的版本为C�
     % @{\hspace{0pt}}用来表示表中每列的间隔 %
     % 以下这种方式为不带@{\extracolsep{\fill}}整行填充效果的例子
     % \begin{tabular*}{\hsize}{@{\hspace{0pt}}ccl@{\hspace{0pt}}}
-    \begin{tabular*}{\hsize}{@{\hspace{20pt}}@{\extracolsep{\fill}}ccl@{\hspace{20pt}}}
+    \begin{tabular*}{\hsize}{@{\hspace{20pt}}@{\extracolsep{\fill}}lcl@{\hspace{20pt}}}
     % 表上线和表头 %
 	\toprule[0.75pt]
     \xiaowu 名称  &\xiaowu 类型  &\makecell[c]{\xiaowu 描述}\\
@@ -163,7 +163,7 @@ leProtocolInterfaces这样的加载协议函数，在众多UEFI应用以及底�
     \setlength{\abovecaptionskip}{0.3cm}  
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=10cm]{locate_protocol.png}
+    \includegraphics[width=9cm]{locate_protocol2.png}
     % 中文标题 %
     \caption*{图 2-3 统一可扩展固件接口协议加载方式图}
     % 调整图片英文标题与下文距离 %
@@ -193,7 +193,7 @@ UEFI固件文件系统指的是BIOS闪存芯片中的数据存储格式，它通
     \setlength{\abovecaptionskip}{0.3cm}  
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=10cm]{ffs_struct.PNG}
+    \includegraphics[width=7cm]{ffs_struct2.png}
     % 中文标题 %
     \caption*{图 2-4 固件文件系统文件存储格式}
     % 调整图片英文标题与下文距离 %
@@ -240,7 +240,7 @@ UEFI BIOS和传统BIOS都支持硬盘的读写功能。UEFI优于传统BIOS的�
     \setlength{\abovecaptionskip}{0.3cm}  
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=10cm]{filesystem_protocol_stack.png}
+    \includegraphics[width=4cm]{filesystem_protocol_stack2.png}
     % 中文标题 %
     \caption*{图 2-5 统一可扩展固件接口文件系统协议栈}
     % 调整图片英文标题与下文距离 %
@@ -275,7 +275,7 @@ UEFI文件系统协议栈相关的驱动程序分别为：AtaatapiPassThruDxe、
 与ATA或SCSI总线进行数据交互的功能；PartitionDxe用于解析存储在硬盘ESP分区中的GPT分区表，用于获取到硬盘中数据
 的分区信息，磁盘在使用前都要进行分区，也就是将硬盘划分为一个个逻辑的区域，不同的分区上可装载不同的文件系统，以
 方便用户使用。
-GPT分区表示意图如图2-6所示。GPT(GUID Partition Table)：全局唯一标识磁盘分区表\cite{extra3}，是一个实体硬盘的
+GPT分区表(GUID Partition Table)：全局唯一标识磁盘分区表\cite{extra3}，是一个实体硬盘的
 分区表的结构布局的标准，是可扩展固件接口（EFI）标准，被用于替代BIOS系统中的一64bits来存储逻辑块地址和大小信
 息的主开机纪录（MBR）分区表，与普遍使用的主引导记录(MBR)分区方案相比，GPT提供了更加灵活的磁盘分区机制。
 LBA(Logical Block Addressing)逻辑块寻址模式将CHS这种三维寻址方式转变为一维的线性寻址，它把硬盘所有
@@ -284,22 +284,22 @@ LBA(Logical Block Addressing)逻辑块寻址模式将CHS这种三维寻址方式
 等操作。LBA1扇区开始则为分区表和表项，每个表项对应一个用户区域内的磁盘分区，并表识这个分区的开始和结束
 位置。关于GPT分区表的详细分析及恶意篡改方式将在第三章中介绍。
 
-\begin{figure}[htb]
+%\begin{figure}[htb]
     %\label{ffs_format}
     % 调整图片与上文的垂直距离 %
-    \vspace{0cm}   
+    %\vspace{0cm}   
     % 调整图片图片与中文标题、中文标题与英文标题距离 %
-    \setlength{\abovecaptionskip}{0.3cm}  
+    %\setlength{\abovecaptionskip}{0.3cm}  
     % 引用/fig/目录中的图片文件 %
-	\centering
-    \includegraphics[width=10cm]{partition.png}
+	%\centering
+    %\includegraphics[width=10cm]{partition.png}
     % 中文标题 %
-    \caption*{图 2-6 硬盘全局分区表示意图}
+    %\caption*{图 2-6 硬盘全局分区表示意图}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
-    \setlength{\belowcaptionskip}{-0.7cm}
+    %\setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 2-6 Hard disk GPT partition}
-\end{figure}
+    %\caption*{Figure 2-6 Hard disk GPT partition}
+%\end{figure}
 
 DiskIoDxe驱动用于定义硬盘最基础的输入输出数据功能，也就是等同于操作系统中的硬盘驱动程序；而
 FileSysDxe驱动则负责为UEFI提供与硬盘硬件相同的文件系统数据组织形式，用以在UEFI系统中通过UNIX风格的文件系统
@@ -328,7 +328,7 @@ IPMI协议作为BMC与服务器其他硬件设备通信的桥梁主要有两种�
     \setlength{\abovecaptionskip}{0.3cm}  
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=12cm]{kcs_register.png}
+    \includegraphics[width=14cm]{kcs_register.png}
     % 中文标题 %
     \caption*{图 2-7 KCS接口寄存器信息}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
@@ -359,4 +359,4 @@ IPMI协议作为BMC与服务器其他硬件设备通信的桥梁主要有两种�
 分析了UEFI文件系统协议栈在系统中的作用和具体到主要的四个驱动程序名称。最后对UEFI BIOS中与BMC系统的通信方式
 进行了分析，选用了IPMI的KCS访问模式，来完成数据的交互。
 
-\bjutclearpage
+%\bjutclearpage
