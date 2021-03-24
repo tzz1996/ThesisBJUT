@@ -70,23 +70,33 @@ edksetup程序的初始化工作，这个程序的目的在于为正在打开着
 
 如图5-2所示，是通过export改变环境变量的命令，将我们设置好的swgcc交叉编译器软链接目录添加到两个系统环境
 变量中的过程，通过这样的方式，就可以实现用gcc 4.4.3版本进行edksetup程序的运行，并用swgcc交叉编译器进行
-平台dsc文件的构建编译过程。具体编译过程，采用linux SHELL脚本的方式进行使用，如图5-3。
+平台dsc文件的构建编译过程。具体编译过程，采用linux SHELL脚本的方式进行使用，如图下代码所示。
 
-\begin{figure}[H]
-    % 调整图片与上文的垂直距离 %
-    \vspace{0cm}   
-    % 调整图片图片与中文标题、中文标题与英文标题距离 %
-    \setlength{\abovecaptionskip}{0.3cm}
-    % 引用/fig/目录中的图片文件 %
-	\centering
-    \includegraphics[width=12cm]{sw_sh_file.png}
-    % 中文标题 %
-    \caption*{图 5-3 交叉编译功能的终端程序}
-    % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
-    \setlength{\belowcaptionskip}{-0.7cm}
-    % 英文标题 %
-    \caption*{Figure 5-3 Cross compile shell program}
-\end{figure}
+\begin{lstlisting}
+    cd dev
+    cd uefibasic
+    . edksetup.sh
+    export PATH=/ctools/cross-tools/bin/:$PATH
+    export LD_LIBRARY_PATH=/ctools/cross-tools/lib:$LD_LIBRARY_PATH
+    cd SenweiPkg
+    . build.sh
+\end{lstlisting}
+
+% \begin{figure}[H]
+%     % 调整图片与上文的垂直距离 %
+%     \vspace{0cm}   
+%     % 调整图片图片与中文标题、中文标题与英文标题距离 %
+%     \setlength{\abovecaptionskip}{0.3cm}
+%     % 引用/fig/目录中的图片文件 %
+% 	\centering
+%     \includegraphics[width=12cm]{sw_sh_file.png}
+%     % 中文标题 %
+%     \caption*{图 5-3 交叉编译功能的终端程序}
+%     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
+%     \setlength{\belowcaptionskip}{-0.7cm}
+%     % 英文标题 %
+%     \caption*{Figure 5-3 Cross compile shell program}
+% \end{figure}
 
 \begin{figure}[htb]
     % 调整图片与上文的垂直距离 %
@@ -97,39 +107,39 @@ edksetup程序的初始化工作，这个程序的目的在于为正在打开着
 	\centering
     \includegraphics[width=12cm]{compile_res.png}
     % 中文标题 %
-    \caption*{图 5-4 交叉编译结果}
+    \caption*{图 5-3 交叉编译结果}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 5-4 Cross compile result}
+    \caption*{Figure 5-3 Cross compile result}
 \end{figure}
 
-其中图5-3为开发的脚本语言编译程序，图5-4为最终的固件编译结果。
+其中的实现为开发的脚本语言编译程序，图5-4为最终的固件编译结果。
 
-\subsection{UEFI Windwos模拟环境}
-与真机环境对应的是Windows系统下的UEFI模拟运行环境，建立这个环境的目的在于，能够简化固件开发过程中调试的
-复杂程度，通过模拟环境测试一些硬件结构不相关的功能模块运行效果，增加开发效率。其中具体信息如下：
-\par （1）固件编译系统环境：Windows 10
-\par （2）固件编译工具：VS2008
-\par （3）EDKII信息：EDKIIR13995版本
-\par 模拟环境的编译较为简单因此不做详细说明，编译效果图如图5-5。其中是GenFds命令生成最终fd固件文件的过程，
-固件名称为NT32.fd。
+% \subsection{UEFI Windwos模拟环境}
+% 与真机环境对应的是Windows系统下的UEFI模拟运行环境，建立这个环境的目的在于，能够简化固件开发过程中调试的
+% 复杂程度，通过模拟环境测试一些硬件结构不相关的功能模块运行效果，增加开发效率。其中具体信息如下：
+% \par （1）固件编译系统环境：Windows 10
+% \par （2）固件编译工具：VS2008
+% \par （3）EDKII信息：EDKIIR13995版本
+% \par 模拟环境的编译较为简单因此不做详细说明，编译效果图如图5-5。其中是GenFds命令生成最终fd固件文件的过程，
+% 固件名称为NT32.fd。
 
-\begin{figure}[htb]
-    % 调整图片与上文的垂直距离 %
-    \vspace{0cm}   
-    % 调整图片图片与中文标题、中文标题与英文标题距离 %
-    \setlength{\abovecaptionskip}{0.3cm}
-    % 引用/fig/目录中的图片文件 %
-	\centering
-    \includegraphics[width=12cm]{win_compile.png}
-    % 中文标题 %
-    \caption*{图 5-5 UEFI模拟环境编译结果}
-    % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
-    \setlength{\belowcaptionskip}{-0.7cm}
-    % 英文标题 %
-    \caption*{Figure 5-5 UEFI simulation environment compilation results}
-\end{figure}
+% \begin{figure}[htb]
+%     % 调整图片与上文的垂直距离 %
+%     \vspace{0cm}   
+%     % 调整图片图片与中文标题、中文标题与英文标题距离 %
+%     \setlength{\abovecaptionskip}{0.3cm}
+%     % 引用/fig/目录中的图片文件 %
+% 	\centering
+%     \includegraphics[width=12cm]{win_compile.png}
+%     % 中文标题 %
+%     \caption*{图 5-5 UEFI模拟环境编译结果}
+%     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
+%     \setlength{\belowcaptionskip}{-0.7cm}
+%     % 英文标题 %
+%     \caption*{Figure 5-5 UEFI simulation environment compilation results}
+% \end{figure}
 
 %
 % 5.2节
@@ -223,11 +233,11 @@ Maintance维护工具。通过lazyrrk 30 0命令获取BMC日志信息，其中�
 	\centering
     \includegraphics[width=12cm]{bmc.png}
     % 中文标题 %
-    \caption*{图 5-6 BMC烧写固件界面}
+    \caption*{图 5-4 BMC烧写固件界面}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 5-6 BMC firmware interface}
+    \caption*{Figure 5-4 BMC firmware interface}
 \end{figure}
 
 然后就是驱动度量日志的查看过程，通过安装的维护工具访问BMC特定端口，并通过linux系统中的重定向输出功能将读取
@@ -242,11 +252,11 @@ Maintance维护工具。通过lazyrrk 30 0命令获取BMC日志信息，其中�
 	\centering
     \includegraphics[width=12cm]{log.png}
     % 中文标题 %
-    \caption*{图 5-6 驱动度量日志}
+    \caption*{图 5-5 驱动度量日志}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 5-6 Driver mesurement log}
+    \caption*{Figure 5-5 Driver mesurement log}
 \end{figure}
 
 %
@@ -310,8 +320,7 @@ IpmiSendCommand (
 
 \subsection{测试过程}
 虽然SHELL作为UEFI BIOS系统中的一个上层用户程序，但作为BIOS来说，并不区分内核和用户的内存访问区域，因此
-SHELL程序依然可以访问到UEFI初始化的一切系统资源，为驱动的测试提供了基础。如图5-7所示，是通过名为bmc\_kcs
-的SHELL命令发送并接收数据的过程。
+SHELL程序依然可以访问到UEFI初始化的一切系统资源，为驱动的测试提供了基础。
 
 \begin{figure}[H]
     % 调整图片与上文的垂直距离 %
@@ -320,14 +329,17 @@ SHELL程序依然可以访问到UEFI初始化的一切系统资源，为驱动�
     \setlength{\abovecaptionskip}{0.3cm}
     % 引用/fig/目录中的图片文件 %
 	\centering
-    \includegraphics[width=11cm]{bmc_kcs.png}
+    \includegraphics[width=11cm]{bmc_kcs2.png}
     % 中文标题 %
-    \caption*{图 5-7 BMC命令运行结果}
+    \caption*{图 5-6 BMC命令运行结果}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 5-7 BMC command results}
+    \caption*{Figure 5-6 BMC command results}
 \end{figure}
+
+如图5-6所示，是通过名为bmc\_kcs的SHELL命令发送并接收数据的过程。
+
 
 %
 % 5.4节
@@ -357,11 +369,11 @@ SHELL程序依然可以访问到UEFI初始化的一切系统资源，为驱动�
 	\centering
     \includegraphics[width=12cm]{fd_depex.png}
     % 中文标题 %
-    \caption*{图 5-8 固件文件依赖区域内容}
+    \caption*{图 5-7 固件文件依赖区域内容}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 5-8 FD file dependency section content}
+    \caption*{Figure 5-7 FD file dependency section content}
 \end{figure}
 
 图5-8所示的是DXE阶段的TimerDxe驱动在FV格式的固件卷中的dependency section中的内容，两个GUID分别代表两个
@@ -377,11 +389,11 @@ SHELL程序依然可以访问到UEFI初始化的一切系统资源，为驱动�
 	\centering
     \includegraphics[width=12cm]{timer_depex.png}
     % 中文标题 %
-    \caption*{图 5-9 驱动加载过程中的日志信息}
+    \caption*{图 5-8 驱动加载过程中的日志信息}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 5-9 Log information during driver loading}
+    \caption*{Figure 5-8 Log information during driver loading}
 \end{figure}
 
 图5-9显示的是在通过SecMain.exe入口点或命令build run执行后在windows终端里打印显示的BIOS运行过程中的日志

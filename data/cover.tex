@@ -12,7 +12,7 @@
   % cpageheading={北京工业大学工学硕士学位论文}, % 页眉，学硕
   cpageheading={北京工业大学工程硕士专业学位论文}, % 页眉，专硕
   cstudent={S201861807},
-  ctitle={基于UEFI的硬盘文件安全加载策略设计与实现},
+  ctitle={基于UEFI的硬盘文件安全加载系统设计与实现},
   cauthor={唐治中},
   cdepartment={计算机技术},
   cmajor={信息安全},
@@ -38,8 +38,11 @@
 % 摘要中文大致一页长度 一段背景引入本文研究 说现有问题总结 本文贡献主要创新点 3个研究内容 3个创新点
 \begin{cabstract}
 
-随着科学的发展，技术的进步，越来越多的计算机上层应用得到极大的发展，例如人工智能和区块链、物联网等，而这些
-技术的发展和流行，都要依赖于操作系统或更底层系统的功能支持和安全保障。《信息安全技术 网络安全等级保护基本要求》
+% 随着科学的发展，技术的进步，越来越多的计算机上层应用得到极大的发展，例如人工智能和区块链、物联网等，而这些
+% 技术的发展和流行，都要依赖于操作系统或更底层系统的功能支持和安全保障。
+在一个计算机系统中，底层软件系统占有着重要的位置，他不仅为上层系统和应用提供基础接口，也从底层为整个系统的
+安全和可信提供了保障。
+《信息安全技术 网络安全等级保护基本要求》
 国家标准中就指出，实际运行中的关键系统需要进行各阶段的可信验证工作。UEFI规范作为近些年来替代传统BIOS的一种
 底层系统规范，从各个机构的服务器到每个人的个人计算机，都得到了广泛的应用。UEFI BIOS在可扩展性和开发效率、开发
 难易程度上都得到极大的增强，但正是这种C语言来替代传统汇编语言的方案，使得UEFI BIOS同样会遭受C语言代码的攻击，
@@ -47,28 +50,40 @@
 系统仍然是如今主流的系统启动方式，他涉及到的不光是硬盘设备的被攻击的可能性，也涉及到固件系统层面的攻击，如对于
 UEFI文件系统这样的操作硬盘的内部逻辑，就更易收到针对性的攻击对硬盘文件的安全性带来威胁。因此研究基于UEFI的硬盘
 文件的安全加载就具有重要意义。本文主要工作如下：
-\par （1）针对UEFI BIOS系统加载硬盘文件过程中存在的安全威胁，通过研究硬盘设备用于存放UEFI BIOS环境中可访问数据的
-ESP分区的组织结构，研究UEFI BIOS环境中读取硬盘文件的方式，以及研究以UEFI型驱动程序作为基础的可信度量机制，以此
-确保针对硬盘设备攻击的文件安全性。结合可信计算理论提出基于UEFI的硬盘设备文件可信加载的总体框架，研究解决UEFI BIOS
-环境加载硬盘文件过程中的安全可信。
-\par （2）针对UEFI BIOS系统的启动阶段设计，通过研究各个阶段的加载功能和特点，结合可信计算技术，确定每个阶段
-需要度量的固件芯片中的代码内容，以UEFI启动的第一阶段作为整个系统的可信根，逐个度量后面阶段的核心代码，将信任链
-逐阶段传递，一直到UEFI加载硬盘文件的BDS阶段，以保证加载文件前，系统的安全可信性。
-\par （3）针对系统中使用的可信计算平台，设计出以BMC系统作为可信平台的方案，通过特定的BMC通信协议和接口对其
-进行通信功能的开发，并根据UEFI启动阶段的特性，设计出PEI阶段和DXE阶段分别开发BMC驱动程序的方案，来达到各个
-阶段度量特定驱动和代码的效果。
-\par 
+% \par （1）针对UEFI BIOS系统加载硬盘文件过程中存在的安全威胁，通过研究硬盘设备用于存放UEFI BIOS环境中可访问数据的
+% ESP分区的组织结构，研究UEFI BIOS环境中读取硬盘文件的方式，以及研究以UEFI型驱动程序作为基础的可信度量机制，以此
+% 确保针对硬盘设备攻击的文件安全性。结合可信计算理论提出基于UEFI的硬盘设备文件可信加载的总体框架，研究解决UEFI BIOS
+% 环境加载硬盘文件过程中的安全可信。
+% \par （2）针对UEFI BIOS系统的启动阶段设计，通过研究各个阶段的加载功能和特点，结合可信计算技术，确定每个阶段
+% 需要度量的固件芯片中的代码内容，以UEFI启动的第一阶段作为整个系统的可信根，逐个度量后面阶段的核心代码，将信任链
+% 逐阶段传递，一直到UEFI加载硬盘文件的BDS阶段，以保证加载文件前，系统的安全可信性。
+% \par （3）针对系统中使用的可信计算平台，设计出以BMC系统作为可信平台的方案，通过特定的BMC通信协议和接口对其
+% 进行通信功能的开发，并根据UEFI启动阶段的特性，设计出PEI阶段和DXE阶段分别开发BMC驱动程序的方案，来达到各个
+% 阶段度量特定驱动和代码的效果。
+% \par 
+
+\par (1)针对UEFI BIOS系统加载硬盘文件过程中存在的安全威胁，结合可信计算理论提出基于UEFI的硬盘设备文件可信
+加载系统的总体框架，并使用的底层可信平台BMC及基板管理控制器，实现UEFI BIOS中BMC驱动程序。
+\par (2)针对UEFI BIOS系统加载UEFI BIOS存储闪存设备中的驱动文件过程中存在的安全问题，设计提出UEFI BIOS启动
+阶段所需度量的UEFI文件系统协议栈驱动程序，并实现度量模块功能。
+\par (3)针对安全方案中的可信度量功能，设计并实现了通过BMC的日志存储功能，并完成确保驱动按顺序加载的依赖表达式
+编写。
+\par (4)根据本系统安全方案的设计，在申威平台中对驱动度量模块、日志生成功能和驱动加载
+顺序修改功能进行实现和测试，以保证功能开发过程的有效性和安全方案的可实施性。
 
 \end{cabstract}
 
 \ckeywords{UEFI, 文件系统协议栈, BMC, 可信计算, 信任链}
 
 \begin{eabstract}
-
-With the development of science and technology, more and more computer upper-level applications 
-have been greatly developed, such as artificial intelligence, blockchain, and the Internet of Things. 
-The development and popularity of these technologies depend on operating systems. Or the functional 
-support and security guarantee of the lower-level system. According to the national standard of 
+% With the development of science and technology, more and more computer upper-level applications 
+% have been greatly developed, such as artificial intelligence, blockchain, and the Internet of Things. 
+% The development and popularity of these technologies depend on operating systems. Or the functional 
+% support and security guarantee of the lower-level system. 
+In a computer system, the underlying software system occupies an important position. It not only 
+provides a basic interface for the upper system and applications, but also provides a guarantee for 
+the safety and credibility of the entire system from the bottom.
+According to the national standard of 
 "Information Security Technology Network Security Graded Protection Basic Requirements", critical 
 systems in actual operation need to be trusted at various stages. As a low-level system specification 
 that replaces traditional BIOS in recent years, UEFI specification has been widely used from servers 
@@ -84,25 +99,21 @@ file system. Such internal logic of operating the hard disk makes it easier to r
 targeted attacks that threaten the security of hard disk files. Therefore, it is of great 
 significance to study the secure loading of UEFI-based hard disk files. The main work of this 
 paper is as follows:
-\par （1）In view of the security threats in the process of loading hard disk files in the UEFI 
-BIOS system, the organization structure of the ESP partition of the hard disk device used to store 
-the accessible data in the UEFI BIOS environment is studied, the method of reading hard disk files 
-in the UEFI BIOS environment, and the research UEFI-type drivers are used as the basic credibility 
-measurement mechanism to ensure file security against hard disk device attacks. Combining with 
-the theory of trusted computing, a general framework for trusted loading of hard disk device files 
-based on UEFI is proposed, and the security and trustworthiness of the process of loading hard 
-disk files in the UEFI BIOS environment is studied.
-\par （2）Aiming at the design of the boot phase of the UEFI BIOS system, by studying the loading 
-functions and characteristics of each phase, combined with trusted computing technology, determine 
-the code content in the firmware chip that needs to be measured at each phase, and the first phase 
-of UEFI boot as the entire system The root of trust measures the core code of the later stages 
-one by one, and passes the chain of trust stage by stage until the BDS stage of UEFI loading hard 
-disk files to ensure the security and credibility of the system before loading files.
-\par （3）Aiming at the trusted computing platform used in the system, the BMC system is designed 
-as a trusted platform, and the BMC communication protocol and interface
-Carry out the development of communication functions, and according to the characteristics of the 
-UEFI boot phase, design the PEI phase and the DXE phase to develop the BMC driver program separately 
-to achieve each Phase measures the effect of specific drivers and codes.
+\par （1）Aiming at the security threats in the process of loading hard disk files in the UEFI BIOS 
+system, combined with trusted computing theory, a UEFI-based overall framework for trusted loading 
+of hard disk device files is proposed, and the underlying trusted platform BMC and baseboard 
+management controller are used to implement UEFI BIOS In the BMC driver.
+\par （2）Aiming at the security problems in the process of loading the driver files in the UEFI BIOS 
+storage flash memory device in the UEFI BIOS system, the UEFI file system protocol stack driver 
+program for the measurement required by the UEFI BIOS startup phase is designed and proposed, and 
+the measurement module function is realized.
+\par （3）Aiming at the credibility measurement function in the security scheme, the log storage 
+function through BMC is designed and realized, and the dependency expression writing to ensure that 
+the driver is loaded in order.
+\par （4）According to the design of the safety scheme of this system, the drive measurement module, 
+log generation function and drive loading sequence modification function are implemented and 
+tested in the Sunway platform to ensure the effectiveness of the function development process 
+and the implementability of the safety scheme.
 
 \end{eabstract}
 
