@@ -47,8 +47,8 @@
 底层系统规范，从各个机构的服务器到每个人的个人计算机，都得到了广泛的应用。UEFI BIOS在可扩展性和开发效率、开发
 难易程度上都得到极大的增强，但正是这种C语言来替代传统汇编语言的方案，使得UEFI BIOS同样会遭受C语言代码的攻击，
 不同处理器架构的统一规范开发方式也为攻击底层固件系统提供了更多的条件。从硬盘这样的块设备经过UEFI BIOS启动操作
-系统仍然是如今主流的系统启动方式，他涉及到的不光是硬盘设备的被攻击的可能性，也涉及到固件系统层面的攻击，如对于
-UEFI文件系统这样的操作硬盘的内部逻辑，就更易收到针对性的攻击对硬盘文件的安全性带来威胁。因此研究基于UEFI的硬盘
+系统仍然是如今主流的系统启动方式，所涉及到的不光是硬盘设备的被攻击的可能性，也涉及到固件系统层面的攻击，如对于
+UEFI文件系统这样的操作硬盘的内部逻辑，就更易受到针对性的攻击对硬盘文件的安全性带来威胁。因此研究基于UEFI的硬盘
 文件的安全加载就具有重要意义。本文主要工作如下：
 % \par （1）针对UEFI BIOS系统加载硬盘文件过程中存在的安全威胁，通过研究硬盘设备用于存放UEFI BIOS环境中可访问数据的
 % ESP分区的组织结构，研究UEFI BIOS环境中读取硬盘文件的方式，以及研究以UEFI型驱动程序作为基础的可信度量机制，以此
@@ -73,7 +73,7 @@ UEFI文件系统这样的操作硬盘的内部逻辑，就更易收到针对性�
 
 \end{cabstract}
 
-\ckeywords{UEFI, 文件系统协议栈, BMC, 可信计算, 信任链}
+\ckeywords{UEFI, 文件系统协议栈, 可信计算, 信任链}
 
 \begin{eabstract}
 % With the development of science and technology, more and more computer upper-level applications 
@@ -117,4 +117,4 @@ and the implementability of the safety scheme.
 
 \end{eabstract}
 
-\ekeywords{UEFI, File system protocol stack, BMC, trusted computing, Chain of trust}
+\ekeywords{UEFI, File system protocol stack, trusted computing, Chain of trust}

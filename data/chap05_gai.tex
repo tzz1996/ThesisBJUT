@@ -150,7 +150,7 @@ edksetup程序的初始化工作，这个程序的目的在于为正在打开着
 
 \subsection{功能实现}
 驱动度量函数首先根据传进来的内存中的驱动数据结构表示，判别驱动类型，由于四个文件系统协议栈驱动都属于
-EFI\_IMAGE\_SUBSYSTEM\_EFI\_RUNTIME\_DRIVER类型\cite{addition3}，因此可以通过这个条件进行初步判断。
+EFI\_IMAGE\_SUBSYSTEM\_EFI\_RUN-\newline TIME\_DRIVER类型\cite{addition3}，因此可以通过这个条件进行初步判断。
 在确定驱动类型正确
 之后，进行GUID的判别，其中的四个特定驱动程序GUID通过INF文件获取的方式写死在代码中。若确定此正在加载的驱动
 是四个驱动之一，则通过可信度量值计算模块中的SHA1计算协议进行度量，并通过GUID在BMC中获取到相应的基准值，

@@ -199,10 +199,11 @@ Handle和EntryPoint和CoreLoadPeImage函数的参数保持一致。ImageBasePage
 #define EFI_IMAGE_SUBSYSTEM_EFI_RUNTIME_DRIVER 12
 \end{lstlisting}
 
-他们分别表示UEFI上层应用型映像文件，启动时服务的驱动映像文件和运行时驱动映像文件，并且PE32格式的映像类型
-属于EFI\_IMAGE\_SUBSYSTEM\_EFI\_RUNTIME\_DRIVER类型，可在加载驱动映像时进行类型的判别。
+他们分别表示UEFI上层应用型映像文件，启动时服务的驱动映像文件和运\newline 行时驱动映像文件，
+并且PE32格式的映像类型
+属于EFI\_IMAGE\_SUBSYSTEM-\newline \_EFI\_RUNTIME\_DRIVER类型，可在加载驱动映像时进行类型的判别。
 \par LOADED\_IMAGE\_PRIVATE\_DATA数据结构中的ImageContext关键字段为可信度量过程的主要依据，ImageContext
-是一个PE\_COFF\_LOADER\_IMAGE\_CONTEXT类型结构体，用来记录驱动文件加载信息。
+是一个PE\_COFF\_LOADER\_IMAGE\_C-\newline ONTEXT类型结构体，用来记录驱动文件加载信息。
 
 \begin{lstlisting}
 typedef struct {
@@ -330,8 +331,8 @@ struct _EFI_IPMI_INTERFACE_PROTOCOL {
 结构体，其中包含了三个主要的函数指针。SendCommand函数用于通过UEFI系统向BMC系统发送IPMI格式的命令代码，
 ReceivePacket函数用于在UEFI系统中读取BMC系统写入特定硬件缓存并通过UEFI的IO端口映射到内存中的地址，
 GetStatus函数则用于读取特定的BMC寄存器，并按位解析BMC状态信息\cite{addition7}。
-\par BMC通信模块以DxeInitlizeIpmiKcs作为入口函数，加载对应的IPMI协议中三个主要功能函数到Protocol数据
-结构中，并通过gBS->InstallMultipleProtocolInterfaces，Boot Service中的安装协议函数通过
+\par BMC通信模块以DxeInitlizeIpmiKcs作为入口函数，加载对应的IPMI协议\newline 中三个主要功能函数到Protocol数据
+结构中，并通过gBS->InstallMultipleProtocolI\newline nterfaces，Boot Service中的安装协议函数通过
 gEfiIpmiInterfaceProtocolGuid协议的全局标识信息，安装于EFI\_IPMI\_INSTANCE结构的Handle字段中。
 
 \subsubsection{发送数据过程}
