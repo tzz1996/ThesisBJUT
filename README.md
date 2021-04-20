@@ -23,7 +23,9 @@
 
 ```
 /
-├─ref
+├─.vscode
+|    └settings.json   # vscode编辑器配置文件，包含默认的pdf浏览软件设置和编译链设置
+├─ref                 # 文献引用文件
 |  └refs.bib
 ├─fig                 # 图片目录
 |  └ (*.png *.jpg *.eps) 
