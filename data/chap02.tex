@@ -32,7 +32,7 @@ UEFI的平台架构
     % 调整图片英文标题与下文距离 %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 2-1 Infrastructure of UEFI}
+    \caption*{Fig.2-1 Infrastructure of UEFI}
 \end{figure}
 
 \par 图 2-1 描绘了UEFI框架中各模块的关系，UEFI固件作为承上启下的模块，对底层硬件进行了抽象处理，
@@ -61,7 +61,7 @@ UEFI Image包含三种：UEFI应用程序、UEFI驱动和OS Loaders，这些实�
     % 调整图片英文标题与下文距离 %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 2-2 Booting Sequence of UEFI}
+    \caption*{Fig.2-2 Booting Sequence of UEFI}
 \end{figure}
 
 从图2-2中可以看出，Platform Init平台初始化过程中建立Boot Service系统服务和RunTime Service系统服务，
@@ -92,7 +92,7 @@ UEFI中协议设计的思想为，由于UEFI的官方提供实现的版本为C�
     \renewcommand\arraystretch{1.0}
     % 设置表题目 %
 	\caption*{表 2-1 启动时服务协议功能表}
-	\caption*{Table 2-1 Boot Service Protocol Interface Functions}
+	\caption*{Tab.2-1 Boot Service Protocol Interface Functions}
     % @{\hspace{0pt}}用来表示表中每列的间隔 %
     % 以下这种方式为不带@{\extracolsep{\fill}}整行填充效果的例子
     % \begin{tabular*}{\hsize}{@{\hspace{0pt}}ccl@{\hspace{0pt}}}
@@ -169,7 +169,7 @@ leProtocolInterfaces这样的加载协议函数，在众多UEFI应用以及底�
     % 调整图片英文标题与下文距离 %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 2-3 Locating Protocol of UEFI}
+    \caption*{Fig.2-3 Locating Protocol of UEFI}
 \end{figure}
 
 \par 协议的加载过程可通过图2-3分析得知。在图2-3中可以看出，协议由HandleProtocol等表2-1中列出的装载协议
@@ -197,15 +197,15 @@ UEFI固件文件系统指的是BIOS闪存芯片中的数据存储格式，它通
     % 中文标题 %
     \caption*{图 2-4 固件文件系统文件存储格式}
     % 调整图片英文标题与下文距离 %
-    \setlength{\belowcaptionskip}{-0.7cm}
+    \setlength{\belowcaptionskip}{-0.4cm}
     % 英文标题 %
-    \caption*{Figure 2-4 Firmware file system file storage format}
+    \caption*{Fig.2-4 Firmware file system file storage format}
 \end{figure}
 
 在图2-4中，左边为通过结构图的方式说明固件文件系统的数据存储格式，右边为通过数据结构中的树形结构来阐述
-FFS中的文件存储。右图中，蓝色方框代表了一个完整的FFS中的文件映像也就是UEFI中可执行文件的二进制数据，
-黄色方框代表了一个父目录结构，黄色方框中包含的灰色方框代表了父目录中的子目录，也就是文件影响中的最小
-单位。对应到右图的树结构中，黄色节点就是树中有子节点的父节点，而灰色节点则代表了叶子节点。了解固件文件
+FFS中的文件存储。右图中，白色方框代表了一个完整的FFS中的文件映像也就是UEFI中可执行文件的二进制数据，
+灰色方框代表了一个父目录结构，灰色方框中包含的深灰色方框代表了父目录中的子目录，也就是文件影响中的最小
+单位。对应到右图的树结构中，灰色节点就是树中有子节点的父节点，而深灰色节点则代表了叶子节点。了解固件文件
 系统中的文件数据存储格式有助于理解UEFI内核在系统初始化过程中调用相关解析FFS中文件函数的运行过程，也有
 助于帮助分析本文安全方案中可信度量的具体数据内容。
 %
@@ -246,7 +246,7 @@ UEFI BIOS和传统BIOS都支持硬盘的读写功能。UEFI优于传统BIOS的�
     % 调整图片英文标题与下文距离 %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 2-5 UEFI File system protocol stack}
+    \caption*{Fig.2-5 UEFI File system protocol stack}
 \end{figure}
 
 如图2-5所示，最下层Disk层表示如硬盘设备这样的块设备硬件。PassTh-\newline rough层表示硬盘设备与总线接口的协议，
@@ -334,7 +334,7 @@ IPMI协议作为BMC与服务器其他硬件设备通信的桥梁主要有两种�
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 2-6 KCS Interface Registers}
+    \caption*{Fig.2-6 KCS Interface Registers}
 \end{figure}
 
 如图2-7所示，为KCS接口所使用到的寄存器即相关信息，主要涉及到四个寄存器，分别是用来查看BMC此时状态的状态

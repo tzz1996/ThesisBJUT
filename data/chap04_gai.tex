@@ -80,7 +80,7 @@ typedef struct SHAstate_st {
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 4-1 The Firmware Volume Format}
+    \caption*{Fig.4-1 The Firmware Volume Format}
 \end{figure}
 
 如图4-1所示，符合PI规范的FV固件卷文件包含主要两部分，其中一部分是如图所示的firmware volume header
@@ -105,9 +105,9 @@ UEFI特定的FFS固件文件系统，还支持一切符合PI规范的固件文�
     % 中文标题 %
     \caption*{图 4-2 固件文件系统文件布局}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
-    \setlength{\belowcaptionskip}{-0.7cm}
+    \setlength{\belowcaptionskip}{-0.5cm}
     % 英文标题 %
-    \caption*{Figure 4-2 Typical FFS File Layout}
+    \caption*{Fig.4-2 Typical FFS File Layout}
 \end{figure}
 
 \par 如图4-1所示，固件卷中每一个文件以单独的结构进行存储，文件名称为FFS file。一个文件中包含了文
@@ -121,7 +121,7 @@ UEFI规范所规定的固件文件系统section分类及信息如表4-1。
     \renewcommand\arraystretch{1.0}
     % 设置表题目 %
 	\caption*{表 4-1 固件文件系统分段信息}
-	\caption*{Table 4-1 The Firmware File System Section Imformation}
+	\caption*{Tab.4-1 The Firmware File System Section Imformation}
     % @{\hspace{0pt}}用来表示表中每列的间隔 %
     % 以下这种方式为不带@{\extracolsep{\fill}}整行填充效果的例子
     % \begin{tabular*}{\hsize}{@{\hspace{0pt}}ccl@{\hspace{0pt}}}
@@ -241,9 +241,9 @@ typedef struct {
     % 中文标题 %
     \caption*{图 4-3 加载硬盘文件流程}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
-    \setlength{\belowcaptionskip}{-0.7cm}
+    \setlength{\belowcaptionskip}{-0.5cm}
     % 英文标题 %
-    \caption*{Figure 4-3 Process of loading hard disk files}
+    \caption*{Fig.4-3 Process of loading hard disk files}
 \end{figure}
 
 首先需要通过Boot Service的HandleProtocol服务来加载系统提供的
@@ -284,7 +284,7 @@ EFI\_SIMPLE\_FILE\_SYSTEM\_PROTOCOL文件系统协议，将其安装在提供的
 的是申威6A型号服务器的具体驱动名称和GUID信息\cite{chinese7,addition2}。
 \par 在驱动度量模块中，另一个重要的功能就是生成度量日志的功能。此功能的目的是向BMC系统发送UEFI启动过程
 中度量UEFI文件系统协议栈的四个驱动和特定硬盘ESP分区文件时，将度量过程中产生的hash值和BMC中取出的基准值，
-以及度量结果通过日志写入的方式，存储于BMC系统固件中。由于此功能不需要UEFI系统和BMC系统尽心数据互送，只
+以及度量结果通过日志写入的方式，存储于BMC系统固件中。由于此功能不需要UEFI系统和BMC系统进行数据互送，只
 需要UEFI系统单向得将ASCII码信息写入BMC系统，因此通信方式没有采用IPMI协议，而是通过IO端口映射的方式，将
 数据流写入目的地址。
 
@@ -299,9 +299,9 @@ EFI\_SIMPLE\_FILE\_SYSTEM\_PROTOCOL文件系统协议，将其安装在提供的
     % 中文标题 %
     \caption*{图 4-4 日志信息写入流程}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
-    \setlength{\belowcaptionskip}{-0.7cm}
+    \setlength{\belowcaptionskip}{-0.5cm}
     % 英文标题 %
-    \caption*{Figure 4-4 Process of writing log information}
+    \caption*{Fig.4-4 Process of writing log information}
 \end{figure}
 
 如图4-4所示，描述的是度量日志写入功能中向串口写入信息的函数。其中输入的日志信息是使用系统调用AsciiVSPrint函数
@@ -353,7 +353,7 @@ gEfiIpmiInterfaceProtocolGuid协议的全局标识信息，安装于EFI\_IPMI\_I
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 4-5 KCS Write Transfer Flow}
+    \caption*{Fig.4-5 KCS Write Transfer Flow}
 \end{figure}
 
 如图4-5所示，是IPMI协议的KCS访问模式中数据写入BMC的执行流程，其中一共涉及到4种BMC寄存器的访问与操作，他们
@@ -375,7 +375,7 @@ gEfiIpmiInterfaceProtocolGuid协议的全局标识信息，安装于EFI\_IPMI\_I
     \renewcommand\arraystretch{1.0}
     % 设置表题目 %
 	\caption*{表 4-2 BMC状态寄存器标志位说明}
-	\caption*{Table 4-2 KCS Interface Status Register Bits}
+	\caption*{Tab.4-2 KCS Interface Status Register Bits}
     % @{\hspace{0pt}}用来表示表中每列的间隔 %
     % 以下这种方式为不带@{\extracolsep{\fill}}整行填充效果的例子
     % \begin{tabular*}{\hsize}{@{\hspace{0pt}}ccl@{\hspace{0pt}}}
@@ -430,7 +430,7 @@ DATA\_OUT中的一字节数据，随后再向DATA\_IN中写入READ，通过外�
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 4-6 KCS Read Transfer Flow}
+    \caption*{Fig.4-6 KCS Read Transfer Flow}
 \end{figure}
 
 %
@@ -457,7 +457,7 @@ SHA1算法，集成在SEC core的代码中，以此来完成阶段度量的任�
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 4-7 Execution process of SEC}
+    \caption*{Fig.4-7 Execution process of SEC}
 \end{figure}
 
 如图4-7所示，在系统正常执行SEC阶段代码中加入可信度量PEI core代码的过程，并根据度量结果，若PEI core
@@ -484,9 +484,9 @@ SHA1算法，集成在SEC core的代码中，以此来完成阶段度量的任�
     % 中文标题 %
     \caption*{图 4-8 PEI阶段流程图}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
-    \setlength{\belowcaptionskip}{-0.7cm}
+    \setlength{\belowcaptionskip}{-0.5cm}
     % 英文标题 %
-    \caption*{Figure 4-8 Execution process of PEI}
+    \caption*{Fig.4-8 Execution process of PEI}
 \end{figure}
 
 \par 由于PEI阶段设计为只度量DXE core核心代码，并且PEI阶段存在着两次驱动加载过程，分别是临时内存的关键PEIM
@@ -517,9 +517,9 @@ DXE阶段为本安全方案度量UEFI文件系统协议栈驱动程序的主要�
     % 中文标题 %
     \caption*{图 4-9 DXE阶段流程图}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
-    \setlength{\belowcaptionskip}{-0.7cm}
+    \setlength{\belowcaptionskip}{-0.5cm}
     % 英文标题 %
-    \caption*{Figure 4-9 Execution process of DXE}
+    \caption*{Fig.4-9 Execution process of DXE}
 \end{figure}
 
 如图4-9所示，系统进入DXE阶段后，首先根据PEI阶段传来的HOB数据结构初始化DXE阶段的Boot Service
@@ -549,7 +549,7 @@ BDS core通过BDS架构协议定位和加载在启动准备服务环境中执行
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.3cm}
     % 英文标题 %
-    \caption*{Figure 4-10 Execution process of BDS}
+    \caption*{Fig.4-10 Execution process of BDS}
 \end{figure}
 
 如图4-10所示，系统进入BDS阶段执行BDS core代码，并根据BDS加载的硬盘ESP分区中的文件调用DXE阶段
@@ -572,7 +572,7 @@ BDS core通过BDS架构协议定位和加载在启动准备服务环境中执行
     \renewcommand\arraystretch{1.0}
     % 设置表题目 %
 	\caption*{表 4-3 依赖表达式命令摘要}
-	\caption*{Table 4-3 Dependency Expression Opcode Summary}
+	\caption*{Tab.4-3 Dependency Expression Opcode Summary}
     % @{\hspace{0pt}}用来表示表中每列的间隔 %
     % 以下这种方式为不带@{\extracolsep{\fill}}整行填充效果的例子
     % \begin{tabular*}{\hsize}{@{\hspace{0pt}}ccl@{\hspace{0pt}}}
@@ -626,9 +626,9 @@ DXE阶段相同。UEFI系统中，通过INF文件的[Protocols]字段下添加�
     % 中文标题 %
     \caption*{图 4-11 固件卷依赖表达式存储}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
-    \setlength{\belowcaptionskip}{-0.7cm}
+    \setlength{\belowcaptionskip}{-0.5cm}
     % 英文标题 %
-    \caption*{Figure 4-11 Dependency Expression In Firmware Volume}
+    \caption*{Fig.4-11 Dependency Expression In Firmware Volume}
 \end{figure}
 
 如图4-11所示，FV中有一个Priori File用来描述系统规定的强类型优先级关系，即这个优先级文件中规定的加载顺序

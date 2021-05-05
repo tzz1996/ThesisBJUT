@@ -43,9 +43,9 @@
     % 中文标题 %
     \caption*{图 5-1 编译器软连接}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
-    \setlength{\belowcaptionskip}{-0.7cm}
+    \setlength{\belowcaptionskip}{-0.5cm}
     % 英文标题 %
-    \caption*{Figure 5-1 Compiler Soft Link}
+    \caption*{Fig.5-1 Compiler Soft Link}
 \end{figure}
 
 图5-1所示的是查看软链接的修改效果。接下来是交叉编译申威固件程序的过程，首先需要使用原版gcc4.4.3编译器进行
@@ -65,7 +65,7 @@ edksetup程序的初始化工作，这个程序的目的在于为正在打开着
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 5-2 GCC version switching process}
+    \caption*{Fig.5-2 GCC version switching process}
 \end{figure}
 
 如图5-2所示，是通过export改变环境变量的命令，将我们设置好的swgcc交叉编译器软链接目录添加到两个系统环境
@@ -109,9 +109,9 @@ edksetup程序的初始化工作，这个程序的目的在于为正在打开着
     % 中文标题 %
     \caption*{图 5-3 交叉编译结果}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
-    \setlength{\belowcaptionskip}{-0.7cm}
+    \setlength{\belowcaptionskip}{-0.4cm}
     % 英文标题 %
-    \caption*{Figure 5-3 Cross compile result}
+    \caption*{Fig.5-3 Cross compile result}
 \end{figure}
 
 其中的实现为开发的脚本语言编译程序，图5-4为最终的固件编译结果。
@@ -221,7 +221,7 @@ SerialPortWrite (
 Maintance维护工具。通过lazyrrk 30 0命令获取BMC日志信息，其中包括驱动的度量日志。
 
 \subsection{测试过程}
-首先将经过交叉编译生成的SENWEI.fd文件通过BMC功能烧写如BIOS闪存中，如图5-6所示。将通过通过2400的控制器访问
+首先将经过交叉编译生成的SENWEI.fd文件通过BMC功能烧写如BIOS闪存中，如图5-6所示。将通过2400的控制器访问
 并烧写提供的BIOS固件文件，烧写过程需要开机烧写，否则烧写失败\cite{chinese22}。
 
 \begin{figure}[H]
@@ -237,7 +237,7 @@ Maintance维护工具。通过lazyrrk 30 0命令获取BMC日志信息，其中�
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 5-4 BMC firmware interface}
+    \caption*{Fig.5-4 BMC firmware interface}
 \end{figure}
 
 然后就是驱动度量日志的查看过程，通过安装的维护工具访问BMC特定端口，并通过linux系统中的重定向输出功能将读取
@@ -256,7 +256,7 @@ Maintance维护工具。通过lazyrrk 30 0命令获取BMC日志信息，其中�
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 5-5 Driver mesurement log}
+    \caption*{Fig.5-5 Driver mesurement log}
 \end{figure}
 
 %
@@ -335,7 +335,7 @@ SHELL程序依然可以访问到UEFI初始化的一切系统资源，为驱动�
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 5-6 BMC command results}
+    \caption*{Fig.5-6 BMC command results}
 \end{figure}
 
 如图5-6所示，是通过名为bmc\_kcs的SHELL命令发送并接收数据的过程。
@@ -373,7 +373,7 @@ SHELL程序依然可以访问到UEFI初始化的一切系统资源，为驱动�
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 5-7 FD file dependency section content}
+    \caption*{Fig.5-7 FD file dependency section content}
 \end{figure}
 
 图5-8所示的是DXE阶段的TimerDxe驱动在FV格式的固件卷中的dependency section中的内容，两个GUID分别代表两个
@@ -393,7 +393,7 @@ SHELL程序依然可以访问到UEFI初始化的一切系统资源，为驱动�
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 5-8 Log information during driver loading}
+    \caption*{Fig.5-8 Log information during driver loading}
 \end{figure}
 
 图5-9显示的是在通过SecMain.exe入口点或命令build run执行后在windows终端里打印显示的BIOS运行过程中的日志

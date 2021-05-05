@@ -32,7 +32,7 @@ BootLoader等文件的过程，以及UEFI环境中识别硬盘分区方式、识
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 3-1 Hard disk file system establishment process}
+    \caption*{Fig.3-1 Hard disk file system establishment process}
 \end{figure}
 
 而ESP分区之所以作为EFI系统分区，是因为在安装操作系统的过程中，操作系统安装程序将GPT分区格式硬盘
@@ -57,7 +57,7 @@ UEFI BIOS作为一个基础输入输出系统，为操作系统提供基础的�
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 3-2 Server startup process}
+    \caption*{Fig.3-2 Server startup process}
 \end{figure}
 
 如图3-2所示，服务器上电，随后初始化UEFI BIOS系统，再由UEFI系统通过内部的文件系统协议栈加载硬盘ESP
@@ -76,7 +76,7 @@ UEFI BIOS作为一个基础输入输出系统，为操作系统提供基础的�
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 3-3 UEFI boot process}
+    \caption*{Fig.3-3 UEFI boot process}
 \end{figure}
 
 本文重点研究的过程是UEFI初始化过程，和UEFI加载硬盘ESP分区文件过程。如图3-3所示，为UEFI系统的初始化流程。
@@ -104,7 +104,7 @@ OS加载器以及操作系统加载器。其中，前期OS加载器用来作为S
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 3-4 UEFI load file process}
+    \caption*{Fig.3-4 UEFI load file process}
 \end{figure}
 
 如图3-4所示，UEFI会先通过DXE加载UEFI文件系统协议栈相关的驱动程序，具体驱动程序为：PassThruDxe、
@@ -137,7 +137,7 @@ PartitionDxe、DiskIoDxe、FileSysDxe四个驱动，其中PassThruDxe和FileSysD
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 3-5 MINIX file system hard disk layout}
+    \caption*{Fig.3-5 MINIX file system hard disk layout}
 \end{figure}
 
 \par 首先是针对硬盘设备的攻击，如图3-5所示，是MINIX文件系统在硬盘上的数据结构布局图\cite{chinese30}，
@@ -176,7 +176,7 @@ UNIX文件系统，其与标准UNIX文件系统的设计结构基本相同，FAT
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 3-6 Method of index file by file system in memory}
+    \caption*{Fig.3-6 Method of index file by file system in memory}
 \end{figure}
 
 如图3-6所示，当UEFI加载了文件系统驱动之后，内存中便驻留了文件系统组织文件的方式及特定的数据结构。
@@ -211,7 +211,7 @@ UEFI运行的是可信的文件系统代码，可以从固件层面消除黑客�
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 3-7 UEFI trusted chain transfer}
+    \caption*{Fig.3-7 UEFI trusted chain transfer}
 \end{figure}
 
 如图3-7所示，信任链以BMC系统作为可信平台模块\cite{chinese28}，并以UEFI的第一阶段SEC启动
@@ -234,7 +234,7 @@ BDS阶段包含了此安全方案的主要度量内容，因此单独在下一�
 下面将对安全方案在SEC和PEI阶段的设计进行描述。
 
 \subsection{SEC阶段}
-SEC（Security Phase）阶段是UEFI平台初始话的第一个阶段，计算机系统加电后首先进入这个阶段。SEC阶段
+SEC（Security Phase）阶段是UEFI平台初始化的第一个阶段，计算机系统加电后首先进入这个阶段。SEC阶段
 首先接收并处理系统启动和重启信号，系统加电信号、系统重启信号、系统运行过程中的异常信号。还有一个重要
 过程为初始化临时存储区域。系统运行在SEC阶段时，仅CPU和CPU内部资源被初始化，而各种外部设备和内存都没
 有被初始化。因此系统需要一部分临时内存用于代码和数据的存储，一般称为临时RAM，临时RAM只能位于CPU内部
@@ -270,11 +270,11 @@ PEI没有DXE的资源丰富。而PEI阶段的一个主要目的就是以最少�
 	\centering
     \includegraphics[width=10cm]{pei_core2.png}
     % 中文标题 %
-    \caption*{图 3-9 PEI阶段系统结构}
+    \caption*{图 3-8 PEI阶段系统结构}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
     \setlength{\belowcaptionskip}{-0.7cm}
     % 英文标题 %
-    \caption*{Figure 3-9 System structure of PEI}
+    \caption*{Fig.3-8 System structure of PEI}
 \end{figure}
 
 如图3-9所示，PEI阶段的主要结构分为PEI core也就是PEI基础代码，负责PEI阶段的整体功能执行；
@@ -325,11 +325,11 @@ DXE阶段的总体功能设计。
 	\centering
     \includegraphics[width=14cm]{system_framework.png}
     % 中文标题 %
-    \caption*{图 3-13 系统结构图}
+    \caption*{图 3-9 系统结构图}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
-    \setlength{\belowcaptionskip}{-0.7cm}
+    \setlength{\belowcaptionskip}{-0.5cm}
     % 英文标题 %
-    \caption*{Figure 3-13 System framework}
+    \caption*{Fig.3-9 System framework}
 \end{figure}
 
 如图3-13所示，此系统涉及到用来存储各个阶段核心程序和文件系统协议驱动程序的基准值的BMC固件系统，而
