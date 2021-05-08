@@ -12,8 +12,8 @@ UEFI文件系统协议栈相关内容及驱动程序介绍，还包括基板管�
 
 \subsection{UEFI系统结构}
 UEFI（Unified Extensible Firmware Interface，统一可扩展固件接口）定义了操作系统和平台固件直接的接口，
-UEFI 提供了一个统一可扩展的固件平台，并针对平台特性定义了一系列接口。该平台整体处于硬件与操作系统中间，
-平台最上层的可扩展固件接口包含了平台提供的 API 函数、启动时服务（EFI  Boot  Services）、运行时服务
+UEFI定义的是统一可扩展的固件平台，同时根据平台的特性定义了系列化接口。此平台位置位于硬件与操作系统中间层，
+平台顶层可扩展固件接口提供了平台API函数、启动时服务（EFI  Boot  Services）、运行时服务
 （EFI  Runtime Services）和操作系统引导程序\cite{english21}，下层则是根据 UEFI 规范实现的平台固件。
 UEFI的平台架构
 如图 2-1 所示：
@@ -35,16 +35,16 @@ UEFI的平台架构
     \caption*{Fig.2-1 Infrastructure of UEFI}
 \end{figure}
 
-\par 图 2-1 描绘了UEFI框架中各模块的关系，UEFI固件作为承上启下的模块，对底层硬件进行了抽象处理，
-又不断地对上层的操作系统提供服务，并在不同的服务层的连接中采用了标准的接口。图中UEFI保留了对
-传统BIOS引导操作系统的兼容性，所以在可扩展固件接口的实现中有两种操作系统引导方式，分别为
+\par 图 2-1 描绘了UEFI框架中各模块的关系，UEFI固件作为承上启下的模块，对系统硬件进行了功能上的抽象总结，
+又持续性地对上层系统提供硬件支持服务，并用标准接口定义了不同层级中的连接。图中UEFI兼容了传统BIOS引导加载
+上层系统的功能，因此UEFI规范的功能实现存在两种操作系统引导方式，分别为
 Legacy OS Loader 和UEFI OS Loader。 
-\par UEFI允许操作系统预处理，实现了操作系统的引导和一些系统软件执行所需要的其它应用程序，
-如诊断程序、UEFI Shell、系统调试软件等，这些程序统称为UEFI实体（UEFI Image）。根据UEFI规范，
-UEFI Image包含三种：UEFI应用程序、UEFI驱动和OS Loaders，这些实体都是在UEFI API调用的基础上
-实现的。
+\par UEFI提供了可执行的操作系统引导程序，也包括了像BIOS运行过程中提供给用户的上层应用程序，
+如诊断处理程序、UEFI脚本语言接口、调试工具等，以上程序的运行都依附于UEFI实体（UEFI Image）。根据UEFI规范，
+UEFI Image包含三种：UEFI上层用户程序、UEFI服务及驱动，和OS Loaders，通过对UEFI API的调用均可对
+以上UEFI实体进行实现。
 \par 从图中可以看出，UEFI的启动时服务Boot Service中包含了UEFI在PEI和DXE两个主要加载驱动完成
-系统初始化过程中所需要的驱动程序、内存管理、设备管理、协议贮存等信息。而UEFI的启动时服务也有他
+系统初始化过程中所需要的驱动程序、内存自定义管理、设备抽象管理、协议贮存等信息。而UEFI的启动时服务也有他
 自己的生命周期，从下图就可以看出启动时服务在UEFI启动过程中的位置。
 
 \begin{figure}[htb]
@@ -75,16 +75,15 @@ Boot Service服务，并继续向上层操作系统提供RunTime Service服务�
 因此，启动时服务其中包含的如协议加载函数等为本文的主要研究对象。
 
 \subsection{UEFI协议运作方式}
-UEFI中协议设计的思想为，由于UEFI的官方提供实现的版本为C语言实现，而C语言是一种面向过程的语言，而完全
-使用面向过程的思想来管理和使用众多UEFI协议将会使程序变得非常复杂。Protocol作为一种对象来设计管理会更加
+UEFI中协议设计的思想为，由于UEFI的官方提供实现的版本为C语言实现，而C语言是一种结构化的面向过程的语言，而完全
+使用面向过程的思想来管理和使用众多UEFI协议会增加代码的复杂度。Protocol作为一种对象来设计管理会更加
 直观\cite{english13,english12}。因而UEFI中的Protocol引入了面向对象的思想，其中包括：
 \begin{itemize}
 \item 用struct来模拟class。
-\item 用函数指针（Protocol的成员变量）模拟成员函数，此种函数的第一参数必须是指向Protocol的指针，用来
-模拟this指针。
+\item 通过C中的函数指针c++成员函数，用来实现协议中的功能函数并提供调用地址，同样包括了如this指针的模拟。
 \end{itemize}
 \par 从图2-1中可以看出，UEFI中的协议包含于UEFI启动时服务中（Boot Services），由启动时服务提供的功能进行
-协议的加载、保存和调用等操作。其中UEFI启动时服务提供的协议相关的功能函数如表2-1所示。
+协议的加载、保存和调用等操作。其中UEFI启动时服务提供的协议相关的功能服务函数如表2-1所示。
 
 \begin{table}[htb]
     %\label{tab:parametervalues}
@@ -102,9 +101,9 @@ UEFI中协议设计的思想为，由于UEFI的官方提供实现的版本为C�
     \xiaowu 名称  &\xiaowu 类型  &\makecell[c]{\xiaowu 描述}\\
     % 表中线和表内容 %
 	\midrule[0.5pt]
-    \xiaowu InstallProtocolInterface   &\xiaowu Boot  &\quad \xiaowu 在设备句柄上安装一个协议接口\\
-    \xiaowu UninstallProtocolInterface &\xiaowu Boot  &\quad \xiaowu 从设备句柄上移除一个协议接口\\
-    \xiaowu ReinstallProtocolInterface &\xiaowu Boot  &\quad \xiaowu 在设备句柄上重新安装协议接口\\
+    \xiaowu InstallProtocolInterface   &\xiaowu Boot  &\quad \xiaowu 在指定设备句柄上安装一个协议接口\\
+    \xiaowu UninstallProtocolInterface &\xiaowu Boot  &\quad \xiaowu 从指定设备句柄上移除一个协议接口\\
+    \xiaowu ReinstallProtocolInterface &\xiaowu Boot  &\quad \xiaowu 重新安装协议接口在指定设备句柄上\\
     \xiaowu RegisterProtocolNotify     &\xiaowu Boot  &\makecell[l]{ 
                                                         \quad \xiaowu 注册一个事件，只要接口有信号为指定的\\
                                                         \xiaowu 协议安装\\
@@ -127,19 +126,19 @@ UEFI中协议设计的思想为，由于UEFI的官方提供实现的版本为C�
                                                         }\\
     \xiaowu DisconnectController       &\xiaowu Boot  &\quad \xiaowu 通知一组驱动程序以停止管理控制器\\
     \xiaowu ProtocolsPerHandle         &\xiaowu Boot  &\makecell[l]{
-                                                        \quad \xiaowu 检索安装在句柄上的协议列表，函数返回\\
-                                                        \xiaowu 的缓冲区是自动分配的
+                                                        \quad \xiaowu 检索装载在特定句柄上的协议列表，函数\\
+                                                        \xiaowu 返回在数据缓冲中表示的协议链
                                                         }\\
     \xiaowu LocateHandleBuffer         &\xiaowu Boot  &\makecell[l]{
                                                         \quad \xiaowu 从句柄数据库中检索句柄列表，该列表符\\
                                                         \xiaowu 合搜索条件，返回缓冲区自动已分配
                                                         }\\
     \xiaowu LocateProtocol             &\xiaowu Boot  &\makecell[l]{
-                                                        \quad \xiaowu 在句柄数据库中找到第一个支持所需协议\\
-                                                        \xiaowu 的句柄\\
+                                                        \quad \xiaowu 在句柄数据库中检索并找到首个支持所需\\
+                                                        \xiaowu 协议的句柄\\
                                                         }\\
     \xiaowu InstallMultipleProtocolInterfaces
-                                       &\xiaowu Boot  &\quad \xiaowu 将一个或多个协议接口安装到指定句柄上\\
+                                       &\xiaowu Boot  &\quad \xiaowu 将一个或几个协议接口装载到特定句柄上\\
     \xiaowu UninstallMultipleProtocolInterfaces
                                        &\xiaowu Boot  &\quad \xiaowu 从指定句柄中卸载一个或多个协议接口\\
     % 表下线 %
@@ -153,7 +152,7 @@ UEFI中协议设计的思想为，由于UEFI的官方提供实现的版本为C�
 leProtocolInterfaces这样的加载协议函数，在众多UEFI应用以及底层驱动程序中都十分常见，因为他
 可以同时提供出需要加载的多个协议GUID。
 \par 同时，由于启动时服务提供了追踪最新安装了的新协议内容以及他们的使用情况，因此对于UEFI的启动时服务
-来说，它可以安全地卸载并重新安装由UEFI驱动程序使用的协议接口。
+来说，它可以安全地卸载并重新安装由UEFI驱动程序使用的协议服务相关接口。
 
 \begin{figure}[htb]
     %\label{bootint_sequence}
@@ -228,8 +227,8 @@ UEFI BIOS和传统BIOS都支持硬盘的读写功能。UEFI优于传统BIOS的�
 提下必须通过文件系统来完成，要支持读写文件，UEFI必须首先能操作ESP分区上的文件系统。ESP主要用来存放
 操作系统加载器相关的文件，有时在一些实际项目的调试过程中，也需要通过将事先编译好的EFI可运行特定硬件的
 驱动程序通过操作系统放入UEFI能访问到的ESP分区内，并从UEFI SHELL中手动加载所述驱动程序来使调试工作
-更加便捷。总体来说，UEFI对文件系统的要求比较简单，所以采用FAT文件系统就可以满足需求，随着UEFI技术的
-不断发展，对硬盘数据访问的要求也越来越高，因此目前已出现ext2等文件系统用来支持UEFI，并已发布到官方
+更加便捷。总体来说，UEFI对文件系统的要求比较简单，所以采用FAT文件系统就可以满足需求，随着UEFI功能的
+持续开发拓展，对硬盘数据访问的要求也越来越高，因此目前已出现ext2等文件系统用来支持UEFI，并已发布到官方
 开源库中。UEFI文件系统协议栈图如图2-5所示。
 
 \begin{figure}[htb]
@@ -273,14 +272,15 @@ UEFI文件系统协议栈相关的驱动程序分别为：AtaatapiPassThruDxe、
 从命名可以看出，他们四个驱动都属于DXE驱动即服务型驱动，用于在UEFI的DXE和BDS阶段为系统提供服务，其中
 的PassThruDxe和FileSysDxe根据具体的硬盘接口与具体文件系统不同而定。其中PassThruDxe驱动程序负责定义硬盘设备
 与ATA或SCSI总线进行数据交互的功能；PartitionDxe用于解析存储在硬盘ESP分区中的GPT分区表，用于获取到硬盘中数据
-的分区信息，磁盘在使用前都要进行分区，也就是将硬盘划分为一个个逻辑的区域，不同的分区上可装载不同的文件系统，以
-方便用户使用。
-GPT分区表(GUID Partition Table)：全局唯一标识磁盘分区表\cite{extra3}，是一个实体硬盘的
-分区表的结构布局的标准，是可扩展固件接口（EFI）标准，被用于替代BIOS系统中的一64bits来存储逻辑块地址和大小信
-息的主开机纪录（MBR）分区表，与普遍使用的主引导记录(MBR)分区方案相比，GPT提供了更加灵活的磁盘分区机制。
-LBA(Logical Block Addressing)逻辑块寻址模式将CHS这种三维寻址方式转变为一维的线性寻址，它把硬盘所有
-物理扇区的C/H/S编号通过一定的规则转变为一线性的编号，系统效率得到大大提高，避免了烦琐的磁头/柱面/扇区
-的寻址方式。如图中的LBA0扇区为保护MBR，它的作用是阻止不能识别GPT分区的磁盘工具试图对其进行分区或格式化
+的分区信息，物理磁盘在正式与系统交互前都要进行分区操作，也就是把磁盘划分为多个逻辑上的区域，特定的分区上可装载
+特定文件系统，以方便用户使用。
+GPT分区表(GUID Partition Table)：全局唯一标识的磁盘分区表\cite{extra3}，是一个物理磁盘的
+分区表结构布局的特定标准，同样是可扩展固件接口（EFI）的标准，其被用来替换BIOS系统环境中的以64bits来存储
+各个逻辑块物理地址和数据信
+息的名为主开机纪录（MBR）分区表的布局标准，与主引导记录(MBR)的分区具体方案相比，GPT设计了适应行更强的分区策略。
+LBA(Logical Block Addressing)逻辑块寻址模式将CHS这种三维寻址方式转变为一维的线性寻址，它将物理硬盘包含的
+物理扇区的C/H/S编号通过固定的策略转化为线性排列编号，使系统与硬盘数据交互效率显著提升，也规避了死板的磁头/柱面/扇区
+的寻址传统方式。如图中的LBA0扇区为保护MBR，它的作用是阻止不能识别GPT分区的磁盘工具试图对其进行分区或格式化
 等操作。LBA1扇区开始则为分区表和表项，每个表项对应一个用户区域内的磁盘分区，并表识这个分区的开始和结束
 位置。关于GPT分区表的详细分析及恶意篡改方式将在第三章中介绍。
 

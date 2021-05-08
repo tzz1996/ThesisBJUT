@@ -17,11 +17,12 @@ UEFI环境中硬盘文件的安全加载依赖于UEFI固件系统中对UEFI各�
 
 \subsection{可信度量值计算模块}
 可信度量值计算模块是对自定义SHA1散列函数的封装，用于对DXE阶段的四个UEFI文件系统协议栈驱动程序进行完整性
-度量，并对BDS core进行度量；也负责在BDS阶段对硬盘文件数据进行可信测量。
-\par 此度量过程采用SHA1散列值计算方法，SHA1是由NISTNSA设计为同DSA一起使用的，它对长度小于2的64次方的输入，
-产生长度为160bit的散列值，因此抗穷举(brute-force)性更好。SHA-1设计时基于和MD4相同原理,并且模仿了该算法。
-SHA-1是由美国标准技术局（NIST）颁布的国家标准，是一种应用最为广泛的hash函数算法，也是目前最先进的加密
-技术，被政府部门和私营业主用来处理敏感的信息。而SHA-1基于MD5，MD5又基于MD4。
+度量，并对BDS core进行度量；也负责在BDS阶段对硬盘文件数据做可信测量处理。
+\par 此度量过程采用SHA1散列值计算方法，SHA1算法是被设计为和DSA功能共同作用的，若数据长度小于2的64次方，
+其将输出比特量为160bit的散列值，并拥有良好的抗穷举(brute-force)性。SHA-1使用了与MD4算法相同的设计原理，
+并在一定程度上效仿MD4算法。
+SHA-1算法是一种由美国标准技术局（NIST）规定的标准，也是最为被广泛应用的hash值算法，被如政府和企业用来
+处理涉密数据信息。而SHA-1基于MD5，MD5又基于MD4。
 
 \begin{lstlisting}
 typedef struct{
@@ -35,7 +36,7 @@ typedef struct{
 代码列出的是自定义的EFI\_SHA1\_PROTOCOL协议，用于在加载DXE阶段的可信度量驱动时通过Openprotocol的启动时
 服务的系统调用加载到UEFI系统的句柄数据库中。其中EFI\_SHA1\_INIT，EFI\_SHA1\_UPDATE，EFI\_SHA1\_FINAL，
 EFI\_SHA1\_CLEAN为四个函数指针，用于指向位于驱动中的函数实现。SHA\_Init函数指针所指向的函数用于初始化一个
-用于SHA1算法加密过程的数据结构SHA\_CTX，该结构存放弄了生成SHA1散列值的一些参数。SHA\_Update函数用于处理
+用于SHA1算法加密过程的数据结构SHA\_CTX，此结构贮存了生成SHA1散列值的参数信息。SHA\_Update函数用于处理
 大文件，将其分散成等份的较小值，并对每一块分别调用SHA\_Update生成对应的散列值。SHA\_Final函数用于将
 SHA\_Update函数生成的分块的散列值通过运算形成一个最终的160bits的散列值。SHA\_Clean函数用于清除SHA\_CTX
 数据结构中针对SHA1算法初始化的数据。
@@ -385,8 +386,8 @@ gEfiIpmiInterfaceProtocolGuid协议的全局标识信息，安装于EFI\_IPMI\_I
     \makecell[c]{\xiaowu 比特位}  &\xiaowu 名称  &\makecell[c]{\xiaowu 描述}\\
     % 表中线和表内容 %
     \midrule[0.5pt]
-    \xiaowu 0             &\xiaowu OBF       &\quad \xiaowu 输出数据有效标志位\\
-    \xiaowu 1             &\xiaowu IBF       &\quad \xiaowu 输入数据有效标志位\\
+    \xiaowu 0             &\xiaowu OBF       &\quad \xiaowu 输出数据的有效标志位\\
+    \xiaowu 1             &\xiaowu IBF       &\quad \xiaowu 输入数据的有效标志位\\
     \xiaowu 2             &\xiaowu SMS\_ATN  &\quad \xiaowu 表明BMC有事务需要软件系统处理\\
     \xiaowu 3             &\xiaowu C\_D\_n   &\makecell[l]{
                                                 \quad \xiaowu 表明最后写入的是Command\_R还是\\
@@ -444,7 +445,7 @@ DATA\_OUT中的一字节数据，随后再向DATA\_IN中写入READ，通过外�
 SHA1算法，集成在SEC core的代码中，以此来完成阶段度量的任务。SEC阶段的BMC日志信息的输出由于不借助IPMI协议，
 因此不需要BMC驱动程序，只需调用上述BMC串口写入函数，即可将日志信息写入BMC芯片中。
 
-\begin{figure}[H]
+\begin{figure}[h]
     % 调整图片与上文的垂直距离 %
     \vspace{0cm}   
     % 调整图片图片与中文标题、中文标题与英文标题距离 %
@@ -455,7 +456,7 @@ SHA1算法，集成在SEC core的代码中，以此来完成阶段度量的任�
     % 中文标题 %
     \caption*{图 4-7 SEC阶段执行流程}
     % 调整图片英文标题与下文距离(本文标准为-0.7cm) %
-    \setlength{\belowcaptionskip}{-0.7cm}
+    \setlength{\belowcaptionskip}{-0.5cm}
     % 英文标题 %
     \caption*{Fig.4-7 Execution process of SEC}
 \end{figure}
@@ -506,7 +507,7 @@ DXE阶段为本安全方案度量UEFI文件系统协议栈驱动程序的主要�
 保证UEFI环境加载硬盘文件的安全可信，因此将DXE驱动度量范围缩小至UEFI文件系统协议栈相关驱动，
 达到减小系统开销的目的。
 
-\begin{figure}[htb]
+\begin{figure}[h]
     % 调整图片与上文的垂直距离 %
     \vspace{0cm}   
     % 调整图片图片与中文标题、中文标题与英文标题距离 %
