@@ -40,16 +40,22 @@
 
 % 随着科学的发展，技术的进步，越来越多的计算机上层应用得到极大的发展，例如人工智能和区块链、物联网等，而这些
 % 技术的发展和流行，都要依赖于操作系统或更底层系统的功能支持和安全保障。
-在一个计算机系统中，底层软件系统占有着重要的位置，他不仅为上层系统和应用提供基础接口，也从底层为整个系统的
-安全和可信提供了保障。
-《信息安全技术 网络安全等级保护基本要求》
-国家标准中就指出，实际运行中的关键系统需要进行各阶段的可信验证工作。UEFI规范作为近些年来替代传统BIOS的一种
-底层系统规范，从各个机构的服务器到每个人的个人计算机，都得到了广泛的应用。UEFI BIOS在可扩展性和开发效率、开发
-难易程度上都得到极大的增强，但正是这种C语言来替代传统汇编语言的方案，使得UEFI BIOS同样会遭受C语言代码的攻击，
-不同处理器架构的统一规范开发方式也为攻击底层固件系统提供了更多的条件。从硬盘这样的块设备经过UEFI BIOS启动操作
-系统仍然是如今主流的系统启动方式，所涉及到的不光是硬盘设备的被攻击的可能性，也涉及到固件系统层面的攻击，如对于
-UEFI文件系统这样的操作硬盘的内部逻辑，就更易受到针对性的攻击对硬盘文件的安全性带来威胁。因此研究基于UEFI的硬盘
-文件的安全加载就具有重要意义。本文主要工作如下：
+在一个计算机系统中，底层软件系统占有着重要的位置，他不仅为上层系统
+和应用提供基础接口，也从底层为整个系统的安全和可信提供了保障。《信息安
+全技术网络安全等级保护基本要求》国家标准中就指出，实际运行中的关键系统
+需要进行各阶段的可信验证工作。UEFI 规范作为近些年来替代传统 BIOS 的一
+种底层系统规范，从各个机构的服务器到每个人的个人计算机，都得到了广泛的
+应用。从硬盘这样的块设备经过 UEFI BIOS 启动操作系统仍然是如今主流的系
+统启动方式，所涉及到的不光是硬盘设备的被攻击的可能性，也涉及到固件系统
+层面的攻击，如对于 UEFI 文件系统这样的操作硬盘的内部逻辑，就更易受到针
+对性的攻击，对硬盘文件的安全性带来威胁。
+\par 在 UEFI 环境中加载硬盘文件需要经过 UEFI 文件系统协议栈，而协议栈中
+的协议函数则依赖于 UEFI 启动阶段所加载的文件系统环境对应的驱动程序，确
+定需要度量的文件系统协议栈相关驱动程序也成为了本文的研究关键。而 BIOS
+的驱动文件的存储位置位于闪存设备中，通过固件文件系统格式进行存储，要
+在 UEFI 中对驱动进行度量和加载就需要解析驱动存储格式并对关键信息进行提
+取。因此研究基于 UEFI 的硬盘文件的安全加载就具有重要意义。本文主要工作
+如下：
 % \par （1）针对UEFI BIOS系统加载硬盘文件过程中存在的安全威胁，通过研究硬盘设备用于存放UEFI BIOS环境中可访问数据的
 % ESP分区的组织结构，研究UEFI BIOS环境中读取硬盘文件的方式，以及研究以UEFI型驱动程序作为基础的可信度量机制，以此
 % 确保针对硬盘设备攻击的文件安全性。结合可信计算理论提出基于UEFI的硬盘设备文件可信加载的总体框架，研究解决UEFI BIOS
@@ -80,25 +86,30 @@ UEFI文件系统这样的操作硬盘的内部逻辑，就更易受到针对性�
 % have been greatly developed, such as artificial intelligence, blockchain, and the Internet of Things. 
 % The development and popularity of these technologies depend on operating systems. Or the functional 
 % support and security guarantee of the lower-level system. 
-In a computer system, the underlying software system occupies an important position. It not only 
-provides a basic interface for the upper system and applications, but also provides a guarantee for 
-the safety and credibility of the entire system from the bottom.
-According to the national standard of 
-"Information Security Technology Network Security Graded Protection Basic Requirements", critical 
-systems in actual operation need to be trusted at various stages. As a low-level system specification 
-that replaces traditional BIOS in recent years, UEFI specification has been widely used from servers 
-of various organizations to personal computers of everyone. UEFI BIOS has been greatly enhanced in 
-terms of scalability, development efficiency, and development difficulty. However, it is this C 
-language that replaces the traditional assembly language program, which makes UEFI BIOS also subject 
-to C language code attacks. The unified specification development method of the processor 
-architecture also provides more conditions for attacking the underlying firmware system. 
-Starting the operating system from a block device such as a hard disk through UEFI BIOS is 
-still the mainstream system startup method today. It involves not only the possibility of the 
-hard disk device being attacked, but also the firmware system level attack, such as the UEFI 
-file system. Such internal logic of operating the hard disk makes it easier to receive 
-targeted attacks that threaten the security of hard disk files. Therefore, it is of great 
-significance to study the secure loading of UEFI-based hard disk files. The main work of this 
-paper is as follows:
+In a computer system, the underlying software system occupies an important posi-
+tion. Itnotonlyprovidesabasicinterfacefortheuppersystemandapplications, butalso
+provides a guarantee for the safety and credibility of the entire system from the bottom.
+According to the national standard of "Information Security Technology Network Secu-
+rity Graded Protection Basic Requirements", critical systems in actual operation need to
+be trusted at various stages. As a low-level system specification that replaces traditional
+BIOS in recent years, UEFI specification has been widely used from servers of various
+organizations to personal computers of everyone. Starting the operating system from
+a block device such as a hard disk through UEFI BIOS is still the mainstream system
+startup method today. It involves not only the possibility of the hard disk device being
+attacked, but also the firmware system level attack, such as the UEFI file system. Such
+internal logic of operating the hard disk makes it easier to receive targeted attacks that
+threaten the security of hard disk files. Therefore, it is of great significance to study the
+secure loading of UEFI-based hard disk files.
+\par Loading a hard disk file in the UEFI environment needs to go through the UEFI
+file system protocol stack, and the protocol functions in the protocol stack depend on the
+driver corresponding to the file system environment loaded in the UEFI startup phase,
+and determine the file system protocol stack related drivers that need to be measured It
+has also become the key to the study of this article. The storage location of the BIOS
+driver file is located in the flash memory device and is stored in the firmware file system
+format. To measure and load the driver in UEFI, it is necessary to parse the driver
+storage format and extract key information. Therefore, it is of great significance to
+study the secure loading of hard disk files based on UEFI. The main work of this paper
+is as follows:
 \par （1）Aiming at the security threats in the process of loading hard disk files in the UEFI BIOS 
 system, combined with trusted computing theory, a UEFI-based overall framework for trusted loading 
 of hard disk device files is proposed, and the underlying trusted platform BMC and baseboard 
